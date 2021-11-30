@@ -1,0 +1,134 @@
+/*
+ * Copyright (c) 2018 MediaTek Inc.
+ *
+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ */
+
+#include "mt8518.dtsi"
+
+/ {
+	compatible = "mediatek,mt8518a";
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x0>;
+			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP_0 &CLUSTER_SLEEP_0>;
+			clocks = <&mcucfg CLK_MCU_BUS_SEL>,
+				<&topckgen CLK_TOP_UNIVPLL_D2>,
+				<&apmixedsys CLK_APMIXED_ARMPLL>;
+			clock-names = "cpu", "intermediate", "armpll";
+			operating-points-v2 = <&cluster0_opp>;
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x1>;
+			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP_0 &CLUSTER_SLEEP_0>;
+			clocks = <&mcucfg CLK_MCU_BUS_SEL>,
+				<&topckgen CLK_TOP_UNIVPLL_D2>,
+				<&apmixedsys CLK_APMIXED_ARMPLL>;
+			clock-names = "cpu", "intermediate", "armpll";
+			operating-points-v2 = <&cluster0_opp>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x2>;
+			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP_0 &CLUSTER_SLEEP_0>;
+			clocks = <&mcucfg CLK_MCU_BUS_SEL>,
+				<&topckgen CLK_TOP_UNIVPLL_D2>,
+				<&apmixedsys CLK_APMIXED_ARMPLL>;
+			clock-names = "cpu", "intermediate", "armpll";
+			operating-points-v2 = <&cluster0_opp>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x3>;
+			enable-method = "psci";
+			cpu-idle-states = <&CPU_SLEEP_0 &CLUSTER_SLEEP_0>;
+			clocks = <&mcucfg CLK_MCU_BUS_SEL>,
+				<&topckgen CLK_TOP_UNIVPLL_D2>,
+				<&apmixedsys CLK_APMIXED_ARMPLL>;
+			clock-names = "cpu", "intermediate", "armpll";
+			operating-points-v2 = <&cluster0_opp>;
+		};
+
+		cpu-map {
+			cluster0 {
+				core0 {
+					cpu = <&cpu0>;
+				};
+				core1 {
+					cpu = <&cpu1>;
+				};
+				core2 {
+					cpu = <&cpu2>;
+				};
+				core3 {
+					cpu = <&cpu3>;
+				};
+			};
+		};
+
+		energy-costs {
+			MT8518_CPU_COST_0: mt8518-core-cost0 {
+				busy-cost-data = <0 0>;
+				idle-cost-data = <0>;
+			};
+			MT8518_CLUSTER_COST_0: mt8518-cluster-cost0 {
+				busy-cost-data = <0 0>;
+				idle-cost-data = <0>;
+			};
+		};
+
+		idle-states {
+			entry-method = "psci";
+
+			CPU_SLEEP_0: cpu-sleep-0 {
+				compatible = "arm,idle-state";
+				local-timer-stop;
+				arm,psci-suspend-param = <0x0010000>;
+				entry-latency-us = <600>;
+				exit-latency-us = <600>;
+				min-residency-us = <1200>;
+			};
+
+			CLUSTER_SLEEP_0: cluster-sleep-0 {
+				compatible = "arm,idle-state";
+				local-timer-stop;
+				arm,psci-suspend-param = <0x1010000>;
+				entry-latency-us = <800>;
+				exit-latency-us = <1000>;
+				min-residency-us = <2000>;
+			};
+		};
+	};
+
+	hifi4dsp_load: hifi4dsp_load {
+		compatible = "mediatek,hifi4dsp-load";
+		status = "okay";
+	};
+
+	thermal: thermal@1100d000 {
+		compatible = "mediatek,mt8518-thermal";
+		reg = <0 0x1100d000 0 0x1000>;
+		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_LOW>;
+		clocks = <&topckgen CLK_TOP_THERM>, <&topckgen CLK_TOP_AUX_ADC>;
+		clock-names = "therm", "auxadc";
+		nvmem-cells = <&thermal_calibration>;
+		nvmem-cell-names = "calibration-data";
+		#thermal-sensor-cells = <0>;
+	};
+};

@@ -1,0 +1,17 @@
+/*
+ * Copyright (c) 2020 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "mopac.dtsi"
+
+/ {
+	model = "Amazon Mopac HVT/EVT/DVT/PVT";
+	compatible = "amzn,mopac-pvt", "amzn,mopac-dvt_v1_1", "amzn,mopac-dvt", "amzn,mopac-evt", "amzn,mopac-hvt", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+};

@@ -1,0 +1,37 @@
+/*
+ * Copyright (c) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "laser-mt8512.dtsi"
+
+/ {
+	model = "Amazon Laser Proto 1.1";
+	compatible = "amzn,laser-proto1", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+};
+
+&pcf85063 {
+	status = "okay";
+};
+
+&tmp_108_i2c0_48 {
+	status = "okay";
+};
+
+&tmp_108_i2c0_49 {
+	status = "okay";
+};
+
+&tmp_108_i2c0_4a {
+	status = "okay";
+};
+
+&tmp_108_i2c0_4b {
+	status = "okay";
+};

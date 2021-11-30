@@ -1,0 +1,146 @@
+/*
+ * Copyright (c) 2020 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "brownie-mt8512.dtsi"
+
+/ {
+	model = "Amazon Ganache";
+	compatible = "amzn,ganache-mt8512-nand-evt", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+
+	reset_adc: fixedregulator@7 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&adc_reset_default>;
+	};
+
+	/* display */
+	case_virtual_sensor: case-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <1 62000 224 2 (-40000) 125000>;
+			therm1_s = <1 64400 871 0 (-40000) 125000>;
+			therm2_s = <0 44600 69 597 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <1 69700 919 0 0 0>;
+		};
+	};
+
+	/* top */
+	skin_virtual_sensor: skin-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <1 473 691 672 (-40000) 125000>;
+			therm1_s = <1 64600 871 0 (-40000) 125000>;
+			therm2_s = <1 63300 62 (-327) (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <1 53200 877 116 0 0>;
+		};
+	};
+
+	back_virtual_sensor: back-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 37400 22 375 (-40000) 125000>;
+			therm1_s = <1 63800 871 0 (-40000) 125000>;
+			therm2_s = <1 9820 51 292 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <1 68900 919 0 0 0>;
+		};
+	};
+
+	cpu_virtual_sensor: cpu-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 1000 1000 0 0>;
+		};
+	};
+
+	cpufilter_virtual_sensor: cpufilter-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+		moving-average-prop = <1000 5 100 0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 1000 1000 0 0>;
+		};
+	};
+};
+
+&nandc {
+	status = "okay";
+};
+
+&auxadc {
+        expected-divider-voltage-raw = <900>;
+        ref-voltage-adc-channel = <3>;
+        has-error-correction;
+        status = "okay";
+};
+
+&i2c0 {
+	lp5036_i2c0_30: lp5036@30 {
+		status = "okay";
+	};
+
+	tmp_sensor_i2c0_48: tmp108@48 {
+		status = "okay";
+	};
+
+	tmp_sensor_i2c0_49: tmp108@49 {
+		status = "okay";
+	};
+
+	tmp_sensor_12c0_4B: tmp108@4B {
+		status = "okay";
+	};
+};
+
+&tmp_sensor_i2c2_48 {
+	status = "okay";
+};
+
+&pio {
+	mmc1_pins_default: mmc1default {
+		pins_wifi_reset {
+			pinmux = <MT8512_PIN_44_PWM0__FUNC_GPIO44>;
+			input-enable;
+			bias-disable;
+		};
+	};
+
+	adc_reset_default: adcreset {
+		pins_cmd_dat {
+			pinmux = <MT8512_PIN_17_GPIO17__FUNC_GPIO17>;
+			output-high;
+			bias-pull-up;
+		};
+	};
+};

@@ -1,0 +1,18 @@
+#
+# Amazon Devices
+#
+config ACEWFSTA
+	tristate "ACEWFSTA"
+	default n
+	help
+	  This option enables support the ACEWFSTA accelerator.
+	  If you are not sure, say N here.
+
+config ACENNA
+	tristate "ACENNA"
+	default n
+	help
+	  This option enables support the ACENNA accelerator.
+	  If you are not sure, say N here.
+
+source "drivers/misc/amazon/dsp/Kconfig"

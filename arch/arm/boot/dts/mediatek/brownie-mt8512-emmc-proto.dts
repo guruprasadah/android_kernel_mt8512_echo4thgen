@@ -1,0 +1,38 @@
+/*
+ * Copyright (c) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "laser-mt8512.dtsi"
+/*Intentionally basing this on laser because there was no proto unit for mt8512 emmc brownie,
+ *and we are planning to test on laser proto units. */
+/ {
+	model = "Amazon Brownie 8512 EMMC Proto 1.1";
+	compatible = "amzn,brownie-8512-emmc-proto", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+};
+
+&mmc0 {
+	status = "okay";
+};
+
+&tmp_108_i2c0_48 {
+	status = "okay";
+};
+
+&tmp_108_i2c0_49 {
+	status = "okay";
+};
+
+&tmp_108_i2c0_4a {
+	status = "okay";
+};
+
+&tmp_108_i2c0_4b {
+	status = "okay";
+};

@@ -1,0 +1,915 @@
+/*
+ * Copyright (c) 2018 MediaTek Inc.
+ * Copyright (C) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ */
+
+#include "mt8518-amzn.dtsi"
+
+/ {
+	aliases {
+		ringled0 = &lp5036_i2c0_30;
+		ringled1 = &lp5036_i2c0_31;
+	};
+
+	audio_spi: audio_spi {
+		compatible = "mediatek,mt8518-audio-spi";
+		memory-region = <&adsp_reserved_memory>;
+		status = "okay";
+	};
+
+	reset_adc: fixedregulator@6 {
+		compatible = "regulator-fixed";
+		regulator-name = "reset_adc";
+		gpio = <&pio 62 GPIO_ACTIVE_HIGH>;
+		startup-delay-us = <10000>;
+		enable-active-high;
+		status = "okay";
+	};
+
+	mt8518_audio_codec: mt8518_audio_codec {
+		compatible = "mediatek,mt8518-codec";
+		mediatek,afe-regmap = <&afe>;
+		mediatek,apmixedsys-regmap = <&apmixedsys>;
+		mediatek,downlink-nle-support = <1>;
+		clocks = <&topckgen CLK_TOP_FAUD_INTBUS>;
+		clock-names = "bus";
+	};
+
+	mt8570_audio_jack: mt8570_audio_jack {
+		compatible = "mediatek,mt8570-audio-jack";
+		status = "okay";
+	};
+
+	mt8570_ipi: mt8570_ipi {
+		compatible = "mediatek,mt8570_ipi";
+		interrupt-parent = <&pio>;
+		interrupts = <99 IRQ_TYPE_EDGE_RISING>;
+		status = "okay";
+	};
+
+	sound: sound {
+		compatible = "mediatek,mt8518-laser";
+		mediatek,platform = <&afe>;
+		mediatek,spi-platform = <&audio_spi>;
+
+		/* ADC5140 - over SPI */
+		mediatek,spi-mic-audio-codec-num = <2>;
+		mediatek,spi-mic-audio-codec0 = <&tlv320adc5140_1>;
+		mediatek,spi-mic-audio-codec-name0 = "tlv320adc5140_1";
+		mediatek,spi-mic-codec-dai-name0 = "tlv320adc5140-codec-a";
+		mediatek,spi-mic-audio-codec1 = <&tlv320adc5140_2>;
+		mediatek,spi-mic-audio-codec-name1 = "tlv320adc5140_2";
+		mediatek,spi-mic-codec-dai-name1 = "tlv320adc5140-codec-b";
+		mediatek,spi-mic-format = "dsp_b";
+		mediatek,spi-mic-bck-inverse=<1>;
+		mediatek,spi-mic-mclk-multiplier=<256>;
+		mediatek,spi-mic-master-clock=<0>;
+
+		/* Line Out - over int adda */
+		mediatek,int-adda-audio-codec = <&mt8518_audio_codec>;
+		mediatek,int-adda-codec-dai-name = "mt8518-codec-dai";
+
+		/* Line In - over etdm2 */
+		mediatek,etdm2-in-audio-codec = <&tlv320adc3100>;
+		mediatek,etdm2-in-codec-dai-name = "tlv320adc3100-codec";
+		mediatek,etdm2-in-mclk-multiplier=<256>;
+		mediatek,etdm2-in-format = "i2s";
+		mediatek,etdm2-in-master-clock=<1>;
+
+		/* Spkr Out - over etdm2 */
+		mediatek,etdm2-out-audio-codec-num = <2>;
+		mediatek,etdm2-out-audio-codec0 = <&tas5805m_1_dac>;
+		mediatek,etdm2-out-audio-codec-name0 = "tas5805m_1-dac";
+		mediatek,etdm2-out-codec-dai-name0 = "tas5805m-amplifier-a";
+		mediatek,etdm2-out-audio-codec1 = <&tas5805m_2_dac>;
+		mediatek,etdm2-out-audio-codec-name1 = "tas5805m_2-dac";
+		mediatek,etdm2-out-codec-dai-name1 = "tas5805m-amplifier-b";
+		mediatek,etdm2-out-master-clock=<1>;
+		mediatek,etdm2-out-force-on;
+		mediatek,etdm2-out-force-format = "i2s";
+		mediatek,etdm2-out-force-rate = <48000>;
+		mediatek,etdm2-out-force-channels = <4>;
+		mediatek,etdm2-out-force-bit-width = <32>;
+
+		/* For DSP TDM_IN
+		 * mediatek,spi-mic-audio-codec=<&tlv320_audio_codec>;
+		 * mediatek,spi-mic-codec-dai-name="tlv320aic3101-codec";
+		*/
+
+		/* For AP External DAC
+		 * mediatek,etdm2-out-audio-codec = <&cs42528_audio_codec>;
+		 * mediatek,etdm2-out-codec-dai-name = "cs42528-codec";
+		*/
+
+		pinctrl-names = "default", "extamp_on", "extamp_off";
+		pinctrl-0 = <&aud_pins_default>;
+		pinctrl-1 = <&aud_pins_extamp_on>;
+		pinctrl-2 = <&aud_pins_extamp_off>;
+		status = "okay";
+	};
+
+	led_power: fixedregulator@7 {
+		compatible = "regulator-fixed";
+		regulator-name = "led_power";
+		gpio = <&pio 117 0x0>;
+		startup-delay-us = <100000>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&led_power_pins>;
+		status = "okay";
+	};
+
+	therm0: thermistor_0 {
+		compatible = "murata,ncp03wf104";
+		#thermal-sensor-cells = <0>;
+		pullup-uv = <1800000>;
+		pullup-ohm = <100000>;
+		pulldown-ohm = <0>;
+		io-channels = <&auxadc 0>;
+	};
+
+	therm1: thermistor_1 {
+		compatible = "murata,ncp03wf104";
+		#thermal-sensor-cells = <0>;
+		pullup-uv = <1800000>;
+		pullup-ohm = <100000>;
+		pulldown-ohm = <0>;
+		io-channels = <&auxadc 1>;
+	};
+
+	therm2: thermistor_2 {
+		compatible = "murata,ncp03wf104";
+		#thermal-sensor-cells = <0>;
+		pullup-uv = <1800000>;
+		pullup-ohm = <100000>;
+		pulldown-ohm = <0>;
+		io-channels = <&auxadc 12>;
+	};
+
+	therm3: thermistor_3 {
+		compatible = "murata,ncp03wf104";
+		#thermal-sensor-cells = <0>;
+	};
+
+	wifi_temp_sensor: wifi_temp_sensor {
+		compatible = "amazon,wifi_temp_sensor";
+		#thermal-sensor-cells = <0>;
+	};
+
+	case_virtual_sensor: case-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	skin_virtual_sensor: skin-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	cpu_virtual_sensor: cpu-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	cpufilter_virtual_sensor: cpufilter-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+		moving-average-prop = <1000 5 100 0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	back_virtual_sensor: back-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+	};
+
+	case1_virtual_sensor: case1-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "therm3_s", "wifi_temp", "mtktscpu", "tmp_112_i2c0_4a_s";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			therm3_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+			tmp_112_i2c0_4a_s = <0 0 0 0 0 0>;
+		};
+	};
+
+	back1_virtual_sensor: back1-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "therm3_s", "wifi_temp", "mtktscpu", "tmp_112_i2c0_4a_s";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			therm3_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+			tmp_112_i2c0_4a_s = <0 0 0 0 0 0>;
+		};
+	};
+
+	buck_sec_3v3: fixedregulator@8 {
+		compatible = "regulator-fixed";
+		regulator-name = "buck_sec_3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		gpio = <&pio 46 GPIO_ACTIVE_HIGH>;
+		startup-delay-us = <2000>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&buck_sec_3v3_en_pins>;
+		status = "okay";
+	};
+
+	abc123: abc123 {
+		compatible = "amzn,abc123-net";
+		vdd-supply = <&buck_sec_3v3>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_abc123>;
+		interrupt-parent = <&pio>;
+		interrupts = <40 IRQ_TYPE_LEVEL_LOW>;
+		int-gpio = <&pio 40 GPIO_ACTIVE_LOW>;
+		reset-gpio = <&pio 41 GPIO_ACTIVE_LOW>;
+		reset_duration_ms = <100>;
+	};
+
+	wifi_cooler: wifi {
+		compatible = "amazon,thermal_cooler";
+		#cooling-cells = <2>;
+		max_state = <8>;
+	};
+
+	audio_cooler: audio_cooler {
+		compatible = "amazon,thermal_cooler";
+		#cooling-cells = <2>;
+		max_level = <3>;
+		max_state = <8>;
+	};
+
+	led_cooler: led_cooler {
+		compatible = "amazon,thermal_cooler";
+		#cooling-cells = <2>;
+		max_state = <3>;
+	};
+
+	suspend_cooler: suspend_cooler {
+		compatible = "amazon,thermal_cooler";
+		#cooling-cells = <2>;
+		max_state = <2>;
+	};
+};
+
+&pwm {
+	status = "okay";
+};
+
+&gpio_keys{
+	autorepeat;
+	status = "okay";
+};
+
+&volumeup_button {
+	gpios = <&pio 68 GPIO_ACTIVE_LOW>;
+};
+
+&volumedown_button {
+	gpios = <&pio 69 GPIO_ACTIVE_LOW>;
+};
+
+&action_button {
+	gpios = <&pio 61 GPIO_ACTIVE_LOW>;
+};
+
+&gpio_keys_default {
+	pins_cmd_dat {
+	pinmux = <MT8518_PIN_60_EINT19__FUNC_GPIO60>,
+		<MT8518_PIN_68_I2SO_D2__FUNC_GPIO68>,
+		<MT8518_PIN_69_I2SO_D3__FUNC_GPIO69>;
+		bias-disable;
+		input-enable;
+	};
+
+	pins_cmd_action {
+		pinmux = <MT8518_PIN_61_EINT20__FUNC_GPIO61>;
+		bias-pull-up;
+		input-enable;
+	};
+};
+
+&mmc2_fixed_1v8_io {
+	gpio = <&pio 55 0>;
+};
+
+&afe {
+	mediatek,etdm-out-data-modes = <0 1>;
+	mediatek,etdm-in-data-modes = <1 0>;
+	/* To enable DSP Playback */
+	/* mediatek,use-bypass-afe-pinmux; */
+	/* To enable loopback */
+	/* mediatek,etdm2-out-interlink-enabled; */
+	status = "okay";
+};
+
+&auxadc {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+
+	lp5036_i2c0_30: lp5036@30 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	compatible = "ti,lp5036";
+	reg = <0x30>;
+	vled-supply = <&led_power>;
+	status = "okay";
+		led@0 {
+			reg = <0>;
+			label = "ledmod_0";
+			ti,led-module = <11>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@1 {
+			reg = <1>;
+			label = "ledmod_1";
+			ti,led-module = <10>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@2 {
+			reg = <2>;
+			label = "ledmod_2";
+			ti,led-module = <9>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@3 {
+			reg = <3>;
+			label = "ledmod_3";
+			ti,led-module = <8>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@4 {
+			reg = <4>;
+			label = "ledmod_4";
+			ti,led-module = <7>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@5 {
+			reg = <5>;
+			label = "ledmod_5";
+			ti,led-module = <6>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@6 {
+			reg = <6>;
+			label = "ledmod_6";
+			ti,led-module = <5>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@7 {
+			reg = <7>;
+			label = "ledmod_7";
+			ti,led-module = <4>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@8 {
+			reg = <8>;
+			label = "ledmod_8";
+			ti,led-module = <3>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@9 {
+			reg = <9>;
+			label = "ledmod_9";
+			ti,led-module = <2>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@10 {
+			reg = <10>;
+			label = "ledmod_10";
+			ti,led-module = <1>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@11 {
+			reg = <11>;
+			label = "ledmod_11";
+			ti,led-module = <0>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+	};
+
+	lp5036_i2c0_31: lp5036@31 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	compatible = "ti,lp5036";
+	reg = <0x31>;
+	vled-supply = <&led_power>;
+	status = "okay";
+		led@0 {
+			reg = <0>;
+			label = "ledmod_12";
+			ti,led-module = <11>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@1 {
+			reg = <1>;
+			label = "ledmod_13";
+			ti,led-module = <10>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@2 {
+			reg = <2>;
+			label = "ledmod_14";
+			ti,led-module = <9>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@3 {
+			reg = <3>;
+			label = "ledmod_15";
+			ti,led-module = <8>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@4 {
+			reg = <4>;
+			label = "ledmod_16";
+			ti,led-module = <7>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@5 {
+			reg = <5>;
+			label = "ledmod_17";
+			ti,led-module = <6>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@6 {
+			reg = <6>;
+			label = "ledmod_18";
+			ti,led-module = <5>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@7 {
+			reg = <7>;
+			label = "ledmod_19";
+			ti,led-module = <4>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@8 {
+			reg = <8>;
+			label = "ledmod_20";
+			ti,led-module = <3>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@9 {
+			reg = <9>;
+			label = "ledmod_21";
+			ti,led-module = <2>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@10 {
+			reg = <10>;
+			label = "ledmod_22";
+			ti,led-module = <1>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@11 {
+			reg = <11>;
+			label = "ledmod_23";
+			ti,led-module = <0>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+	};
+
+	tmp_108_i2c0_48: tmp108@48 {
+		compatible = "ti,tmp108";
+		#thermal-sensor-cells = <0>;
+		reg = <0x48>;
+	};
+
+	tmp_108_i2c0_49: tmp108@49 {
+		compatible = "ti,tmp108";
+		#thermal-sensor-cells = <0>;
+		reg = <0x49>;
+	};
+
+	tmp_112_i2c0_48: tmp112@48 {
+		compatible = "ti,tmp112em";
+		#thermal-sensor-cells = <0>;
+		reg = <0x48>;
+		status = "disabled";
+	};
+
+	tmp_112_i2c0_49: tmp112@49 {
+		compatible = "ti,tmp112em";
+		#thermal-sensor-cells = <0>;
+		reg = <0x49>;
+		status = "disabled";
+	};
+
+	tmp_112_i2c0_4a: tmp112@4a {
+		compatible = "ti,tmp112em";
+		#thermal-sensor-cells = <0>;
+		reg = <0x4a>;
+		status = "disabled";
+	};
+
+	tmp_112_i2c0_4b: tmp112@4b {
+		compatible = "ti,tmp112em";
+		#thermal-sensor-cells = <0>;
+		reg = <0x4b>;
+		status = "disabled";
+	};
+};
+
+&i2c1 {
+	tlv320adc3100: tlv320adc3100@18{
+		compatible = "ti,tlv320adc3100";
+		reg = <0x18>;
+		enable-gpio = <&pio 70 0>;
+		status = "okay";
+	};
+
+	tmp_108_i2c1_48: tmp108@48 {
+		compatible = "ti,tmp108";
+		#thermal-sensor-cells = <0>;
+		reg = <0x48>;
+	};
+
+	tmp_108_i2c1_49: tmp108@49 {
+		compatible = "ti,tmp108";
+		#thermal-sensor-cells = <0>;
+		reg = <0x49>;
+	};
+
+	pcf85063: rtc@51 {
+		compatible = "nxp,pcf85063";
+		reg = <0x51>;
+		interrupt-parent = <&pio>;
+		interrupts = <57 IRQ_TYPE_LEVEL_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&rtc_irq>;
+	};
+};
+
+&i2c2 {
+	tsl25723_i2c2_39: tsl25723@39 {
+		compatible = "tsl2572";
+		reg = <0x39>;
+		auto-gain;
+		autozero;
+		vis-ir-ratios = <0x2D>;
+		num-coeffs-per-eqn = <3>;
+		num-cap-colors = <2>;
+		equation-version = <1>;
+		coeffs = <0x2CDE1D50 0x2710 0xFFFFBBE5
+			  0x2CDE1D50 0xBD2 0xFFFFEFD3
+			  0xDFEF260 0x2710 0xFFFFAEB7
+			  0xDFEF260 0x5B7 0xFFFFF829>;
+	};
+
+	tmp_112_i2c2_4a: tmp112@4a {
+		compatible = "ti,tmp112em";
+		#thermal-sensor-cells = <0>;
+		reg = <0x4a>;
+	};
+
+	tmp_112_i2c2_4b: tmp112@4b {
+		compatible = "ti,tmp112em";
+		#thermal-sensor-cells = <0>;
+		reg = <0x4b>;
+	};
+
+	tlv320adc5140_1: tlv320adc5140@4c {
+		compatible = "ti,tlv320adc5140";
+		reg = <0x4c>;
+		reset-adc-regulator-supply = <&reset_adc>;
+		adc-num = <0>;
+		status = "okay";
+	};
+
+	tlv320adc5140_2: tlv320adc5140@4e {
+		compatible = "ti,tlv320adc5140";
+		reg = <0x4e>;
+		reset-adc-regulator-supply = <&reset_adc>;
+		adc-num = <1>;
+		status = "okay";
+	};
+
+	lis2dw12_i2c2_19: lis2dw12@19 {
+		compatible = "st,lis2dw12";
+		reg = <0x19>;
+		interrupt-parent = <&pio>;
+		interrupts = <116 (IRQ_TYPE_LEVEL_LOW)>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&lis2dw12_pins>;
+		status = "disabled";
+	};
+};
+
+#include "laser_thermal_zones.dtsi"
+
+&pwm_pins_default {
+	pins_cmd_dat {
+		pinmux = <MT8518_PIN_47_EINT11__FUNC_PWM_A>;
+	};
+};
+
+&pio {
+	pinctrl-names = "default";
+	led_power_pins: led_pwr_pins {
+		pins_fixed_regulator {
+			pinmux = <MT8518_PIN_117_MSDC1_DAT1__FUNC_GPIO117>;
+			bias-pull-up;
+		};
+		pins_hv_en {
+			pinmux = <MT8518_PIN_118_MSDC1_DAT2__FUNC_GPIO118>;
+			output-high;
+		};
+	};
+
+	rtc_irq: rtc_pins {
+		pins_irq {
+			pinmux = <MT8518_PIN_57_EINT16__FUNC_GPIO57>;
+			bias-disable;
+		};
+	};
+
+	aud_pins_default: audiodefault {
+		pins_dat {
+			pinmux = <MT8518_PIN_24_PWRAP_SPI_CSN__FUNC_PCM_SYNC>,
+				<MT8518_PIN_25_PWRAP_SPI_MOSI__FUNC_PCM_CLK>,
+				<MT8518_PIN_26_PWRAP_SPI_MISO__FUNC_PCM_TX>,
+				<MT8518_PIN_27_PWRAP_INT__FUNC_PCM_RX>,
+				<MT8518_PIN_64_I2SO_BCK__FUNC_I2SO_BCKA>,
+				<MT8518_PIN_65_I2SO_LRCK__FUNC_I2SO_LRCKA>,
+				<MT8518_PIN_66_I2SO_D0__FUNC_I2SO_D0>,
+				<MT8518_PIN_67_I2SO_D1__FUNC_I2SO_D1>,
+				<MT8518_PIN_77_TDM_MCLK__FUNC_I2SIN_MCLKA>,
+				<MT8518_PIN_78_TDM_BCK__FUNC_I2SIN_BCKA>,
+				<MT8518_PIN_79_TDM_LRCK__FUNC_I2SIN_LRCKA>,
+				<MT8518_PIN_80_TDM_DI__FUNC_I2SIN_D0>;
+		};
+	};
+
+	aud_pins_extamp_on: audexampon {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_82_I2SIN_D1__FUNC_GPIO82>;
+			output-high;
+		};
+	};
+
+	aud_pins_extamp_off: audexampoff {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_82_I2SIN_D1__FUNC_GPIO82>;
+			output-low;
+		};
+	};
+
+	usb0_drvvbus: drvvbus_init {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_56_IR__FUNC_GPIO56>;
+			output-low;
+		};
+	};
+
+	usb0_drvvbus_high: drvvbus_high {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_56_IR__FUNC_GPIO56>;
+			output-high;
+		};
+	};
+
+	usb0_drvvbus_low: drvvbus_low {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_56_IR__FUNC_GPIO56>;
+			output-low;
+		};
+	};
+
+	usb0_iddig: iddig_irq_init {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_58_EINT17__FUNC_GPIO58>;
+			bias-pull-up;
+		};
+	};
+
+	spi_pins_0: spi0@0 {
+		pins_spi {
+			pinmux = <MT8518_PIN_36_EINT0__FUNC_SPI0_CSB>,
+				<MT8518_PIN_37_EINT1__FUNC_SPI0_CLK>,
+				<MT8518_PIN_38_EINT2__FUNC_SPI0_MI>,
+				<MT8518_PIN_39_EINT3__FUNC_SPI0_MO>;
+			bias-disable;
+		};
+	};
+
+	zigbee_int: zb_int {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_44_EINT8__FUNC_GPIO44>;
+			input-enable;
+			bias-disable;
+		};
+	};
+
+	zigbee_rst: zb_rst {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_42_EINT6__FUNC_GPIO42>;
+			bias-disable;
+		};
+	};
+
+	buck_sec_3v3_en_pins: buck_sec_3v3_en_pins {
+		pins_fixed_regulator {
+			pinmux = <MT8518_PIN_46_EINT10__FUNC_GPIO46>;
+			input-enable;
+			bias-disable; /* External 10K pull-up */
+		};
+	};
+
+	pinctrl_abc123: pinctrl_abc123 {
+		pins_int {
+			pinmux = <MT8518_PIN_40_EINT4__FUNC_GPIO40>;
+			input-enable;
+			bias-disable; /* External 10K pull-up */
+		};
+		pins_reset {
+			pinmux = <MT8518_PIN_41_EINT5__FUNC_GPIO41>;
+			input-enable; /* Set direction as input. So the pin could be controled by externals */
+			bias-disable; /* External 10K pull-up */
+		};
+	};
+
+	lis2dw12_pins: lis2dw12_pins {
+		pins_dat {
+			pinmux = <MT8518_PIN_116_MSDC1_DAT0__FUNC_GPIO116>;
+			bias-pull-up;
+		};
+	};
+};
+
+&spi0 {
+	status = "okay";
+	gp712@0 {
+		compatible = "qorvo,gp712";
+		reg = <0>;
+		interrupt-parent = <&pio>;
+		interrupts = <44 IRQ_TYPE_EDGE_FALLING>;
+		spi-max-frequency = <0xf42400>;
+		pinctrl-names = "default", "zigbee_int", "zigbee_rst";
+		pinctrl-0 = <&spi_pins_0>;
+		pinctrl-1 = <&zigbee_int>;
+		pinctrl-2 = <&zigbee_rst>;
+		qorvo,int-gpio=<&pio 44 GPIO_ACTIVE_HIGH>;
+		qorvo,reset-gpio=<&pio 42 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&spi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_pins_1>;
+	mediatek,pad-select = <0>;
+	status = "okay";
+
+	spidev1: spi@0 {
+		compatible = "mediatek,hifi4dsp-spi";
+		reg = <0>;
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <4>;
+		spi-max-frequency = <12000000>;
+	};
+};
+
+&svs {
+	vproc-supply = <&mt6395_vproc>;
+};
+
+&usb0 {
+	interrupts-extended = <&sysirq GIC_SPI 72 IRQ_TYPE_LEVEL_LOW>;
+	pinctrl-names = "iddig_irq_init",
+			"drvvbus_init",
+			"drvvbus_low",
+			"drvvbus_high";
+	pinctrl-0 = <&usb0_iddig>;
+	pinctrl-1 = <&usb0_drvvbus>;
+	pinctrl-2 = <&usb0_drvvbus_low>;
+	pinctrl-3 = <&usb0_drvvbus_high>;
+	status = "okay";
+	sw_default_mode = <1>;
+	iddig_gpio = <&pio 58 GPIO_ACTIVE_HIGH>;
+	drvvbus_gpio = <&pio 56 GPIO_ACTIVE_HIGH>;
+};
+
+&mt6395 {
+	mt6395,irq-gpios = <&pio 23 0x0>;
+	status = "okay";
+};
+
+&mmc2_fixed_3v3 {
+	status = "disabled";
+};
+
+&mmc1 {
+	status = "disabled";
+};
+
+&mmc2 {
+	status = "okay";
+	eint-gpios = <&pio 32 0>;
+	vmmc-supply = <&mmc_fixed_3v3>;
+	vqmmc-supply = <&mmc2_fixed_1v8_io>;
+};
+
+&pmic_irq_pins {
+	pins_bus {
+		pinmux = <MT8518_PIN_23_PWRAP_SPI_CLK__FUNC_GPIO23>;
+	};
+};
+
+&mmc2_reset {
+	pins_cmd_dat {
+		pinmux = <MT8518_PIN_55_UCTS1__FUNC_GPIO55>;
+		output-high;
+	};
+};
+
+&uart1 {
+     pinctrl-names = "default";
+     pinctrl-0 = <&uart1_pin>;
+     status = "okay";
+};
+
+#include "mt6395.dtsi"
+
+/delete-node/ &cpufilter_virtual;
+/delete-node/ &cpufilter_virtual_sensor;
+/delete-node/ &therm3_s;
+/delete-node/ &therm3;
+/delete-node/ &back_virtual;
+/delete-node/ &back_virtual_sensor;

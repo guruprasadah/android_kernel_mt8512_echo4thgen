@@ -1,0 +1,9 @@
+obj-$(CONFIG_OPTEE) += optee.o
+optee-objs += core.o
+optee-objs += call.o
+optee-objs += rpc.o
+optee-objs += supp.o
+optee-objs += shm_pool.o
+optee-objs-$(CONFIG_OPTEE_REE_CONSOLE) += optee_kreeconsole.o
+optee-objs-$(CONFIG_OPTEE_REE_CLK_CTRL) += optee_clk_ctrl.o
+optee-objs += $(optee-objs-y)

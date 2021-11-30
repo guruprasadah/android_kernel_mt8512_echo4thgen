@@ -1,0 +1,4 @@
+config MTK_2DGFX
+  bool "enable MTK 2DGFX Driver"
+  help
+     This enable MTK GFX driver.

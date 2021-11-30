@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2020 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "brownie-mt8512.dtsi"
+
+/ {
+	model = "Amazon Brownie";
+	compatible = "amzn,brownie-mt8512-nand-evt", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+
+	reset_adc: fixedregulator@7 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&adc_reset_default>;
+	};
+};
+
+&nandc {
+	status = "okay";
+};
+
+&auxadc {
+	expected-divider-voltage-raw = <900>;
+	ref-voltage-adc-channel = <3>;
+	has-error-correction;
+	status = "okay";
+};
+
+&i2c0 {
+	tmp_sensor_i2c0_48: tmp108@48 {
+		status = "okay";
+	};
+
+	tmp_sensor_i2c0_49: tmp108@49 {
+		status = "okay";
+	};
+};
+
+&tmp_sensor_i2c2_48 {
+	status = "okay";
+};
+
+&pio {
+	mmc1_pins_default: mmc1default {
+		pins_wifi_reset {
+			pinmux = <MT8512_PIN_44_PWM0__FUNC_GPIO44>;
+			input-enable;
+			bias-disable;
+		};
+	};
+
+	adc_reset_default: adcreset {
+		pins_cmd_dat {
+			pinmux = <MT8512_PIN_17_GPIO17__FUNC_GPIO17>;
+			output-high;
+			bias-pull-up;
+		};
+	};
+};

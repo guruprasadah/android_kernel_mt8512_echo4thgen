@@ -1,0 +1,13 @@
+config AMAZON_DSP_FW_LOAD
+	tristate "Amazon DSP FW Load"
+	default n
+
+	help
+        Amazon DSP FW Load
+
+config I2C_ADSP_IPI
+	tristate "Psuedo I2C over IPI Driver"
+	default n
+	help
+	  This selects the Psuedo I2C bus driver to access I2C over IPI for DSP is master
+	  If unsure, say N.

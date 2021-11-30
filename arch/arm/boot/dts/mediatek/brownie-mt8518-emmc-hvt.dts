@@ -1,0 +1,191 @@
+/*
+ * Copyright (C) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ */
+
+/dts-v1/;
+#include "brownie-mt8518.dtsi"
+
+/ {
+	model = "Amazon Brownie";
+	compatible = "amzn,brownie-mt8518-emmc-hvt", "mediatek,mt8518";
+
+	aliases {
+			ringled0 = &lp5036_i2c0_31;
+			display0 = &lp5036_i2c0_30;
+	};
+
+	chosen {
+		bootargs = "console=ttyS0,921600n1 root=/dev/mmcblk0p13 init=/init \
+rootwait earlycon=uart8250,mmio32,\
+0x11005000 initcall_debug loglevel=8 \
+androidboot.hardware=mt8518 androidboot.selinux=permissive \
+firmware_class.path=/vendor/firmware";
+	};
+
+	/* Add LINE_OUT_EN: GPIO_056 */
+	/* Change AUX_DETECT_L: GPIO_114 */
+	/*
+	sound: sound {
+	}
+	*/
+};
+
+
+&i2c0 {
+	lp5036_i2c0_31: lp5036@31 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	compatible = "ti,lp5036";
+	reg = <0x31>;
+	vled-supply = <&led_power>;
+	status = "okay";
+		/* Changed order from Proto to HVT(8518 ONLY): From G-R-B to B-G-R */
+		led@0 {
+			reg = <0>;
+			label = "ledmod_0";
+			ti,led-module = <11>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@1 {
+			reg = <1>;
+			label = "ledmod_1";
+			ti,led-module = <10>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@2 {
+			reg = <2>;
+			label = "ledmod_2";
+			ti,led-module = <9>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@3 {
+			reg = <3>;
+			label = "ledmod_3";
+			ti,led-module = <8>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@4 {
+			reg = <4>;
+			label = "ledmod_4";
+			ti,led-module = <7>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@5 {
+			reg = <5>;
+			label = "ledmod_5";
+			ti,led-module = <6>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@6 {
+			reg = <6>;
+			label = "ledmod_6";
+			ti,led-module = <5>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@7 {
+			reg = <7>;
+			label = "ledmod_7";
+			ti,led-module = <4>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@8 {
+			reg = <8>;
+			label = "ledmod_8";
+			ti,led-module = <3>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@9 {
+			reg = <9>;
+			label = "ledmod_9";
+			ti,led-module = <2>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@10 {
+			reg = <10>;
+			label = "ledmod_10";
+			ti,led-module = <1>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@11 {
+			reg = <11>;
+			label = "ledmod_11";
+			ti,led-module = <0>;
+			rgb-map = /bits/ 8 <2 1 0>;
+			linux,default-trigger = "boot-anim";
+		};
+	};
+
+	lp5036_i2c0_30: lp5036@30 {
+		compatible = "ti,lp5036-frame";
+		reg = <0x30>;
+		channel-map = /bits/ 8 <3 9 2 5 11 10 8 6 7 1
+			14 16 15 12 4 13 18 17 34 31
+			23 20 19 21 22 33 29 27 25 24
+			30 28 32 26 0 35>;
+		enable-gpio = <&pio 118 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+	};
+
+	tmp_sensor_i2c0_4B: tmp108@4B {
+		compatible = "ti,tmp108";
+		reg = <0x4B>;
+		status = "okay";
+	};
+
+	tas5805m_1_dac: tas5805m@2c {
+		compatible = "ti,tas5805m";
+		reg = <0x2c>;
+		use-ap-gpio;
+		reset-gpio = <&pio 35 GPIO_ACTIVE_HIGH>;
+		dac-num = <0>;
+		speaker-config = <1>;
+		status = "okay";
+	};
+};
+
+&i2c2 {
+	lp5036_i2c2_30: lp5036@30 {
+		status = "disabled";
+	};
+
+	tmp_sensor_i2c2_49: tmp108@49 {
+		status = "disabled";
+	};
+
+	/* Remove interrupt on ALS for now, but we need to figure out the best way
+	   to add back. */
+	/*
+	tsl25723_i2c2_39: tsl25723@39 {
+		interrupt-parent = <&pio>;
+		interrupts = <116 (IRQ_TYPE_LEVEL_LOW)>;
+	};
+	*/
+
+	lis2dw12_i2c2_19: lis2dw12@19 {
+		interrupt-parent = <&pio>;
+		interrupts = <116 (IRQ_TYPE_LEVEL_LOW)>;
+	};
+};
+
+&pio {
+	lis2dw12_pins: lis2dw12_pins {
+		pins_dat {
+			pinmux = <MT8518_PIN_116_MSDC1_DAT0__FUNC_GPIO116>;
+			input-enable;
+			bias-disable;
+		};
+	};
+};

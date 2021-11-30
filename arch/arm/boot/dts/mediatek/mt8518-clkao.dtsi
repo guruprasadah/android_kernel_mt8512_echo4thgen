@@ -1,0 +1,154 @@
+/*
+ * Copyright (c) 2018 MediaTek Inc.
+ *
+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ */
+
+&clkao {
+	status = "disabled";
+
+	bring-up {
+		compatible = "mediatek,clk-bring-up";
+		clocks =
+			<&apmixedsys CLK_APMIXED_ARMPLL>,
+			<&apmixedsys CLK_APMIXED_MAINPLL>,
+			<&apmixedsys CLK_APMIXED_UNIVPLL>,
+			<&apmixedsys CLK_APMIXED_MMPLL>,
+			<&apmixedsys CLK_APMIXED_APLL1>,
+			<&apmixedsys CLK_APMIXED_APLL2>,
+			<&apmixedsys CLK_APMIXED_TVDPLL>,
+			<&topckgen CLK_TOP_PWM_MM>,
+			<&topckgen CLK_TOP_SMI>,
+			<&topckgen CLK_TOP_SPI2>,
+			<&topckgen CLK_TOP_SPI3>,
+			<&topckgen CLK_TOP_SPINFI>,
+			<&topckgen CLK_TOP_26M_DEBUG>,
+			<&topckgen CLK_TOP_USB_48M_DEBUG>,
+			<&topckgen CLK_TOP_52M_DEBUG>,
+			<&topckgen CLK_TOP_32K_DEBUG>,
+			<&topckgen CLK_TOP_THERM>,
+			<&topckgen CLK_TOP_APDMA>,
+			<&topckgen CLK_TOP_I2C0>,
+			<&topckgen CLK_TOP_I2C1>,
+			<&topckgen CLK_TOP_AUXADC1>,
+			<&topckgen CLK_TOP_NFI>,
+			<&topckgen CLK_TOP_NFIECC>,
+			<&topckgen CLK_TOP_DEBUGSYS>,
+			<&topckgen CLK_TOP_PWM>,
+			<&topckgen CLK_TOP_UART0>,
+			<&topckgen CLK_TOP_UART1>,
+			<&topckgen CLK_TOP_USB>,
+			<&topckgen CLK_TOP_FLASHIF_26M>,
+			<&topckgen CLK_TOP_AUXADC2>,
+			<&topckgen CLK_TOP_I2C2>,
+			<&topckgen CLK_TOP_MSDC0>,
+			<&topckgen CLK_TOP_MSDC1>,
+			<&topckgen CLK_TOP_NFI2X>,
+			<&topckgen CLK_TOP_MEMSLP_DLYER>,
+			<&topckgen CLK_TOP_SPI>,
+			<&topckgen CLK_TOP_APXGPT>,
+			<&topckgen CLK_TOP_PMICWRAP_MD>,
+			<&topckgen CLK_TOP_PMICWRAP_CONN>,
+			<&topckgen CLK_TOP_PMIC_SYSCK>,
+			<&topckgen CLK_TOP_AUX_ADC>,
+			<&topckgen CLK_TOP_AUX_TP>,
+			<&topckgen CLK_TOP_RBIST>,
+			<&topckgen CLK_TOP_NFI_BUS>,
+			<&topckgen CLK_TOP_GCE>,
+			<&topckgen CLK_TOP_TRNG>,
+			<&topckgen CLK_TOP_PWM_B>,
+			<&topckgen CLK_TOP_PWM1_FB>,
+			<&topckgen CLK_TOP_PWM2_FB>,
+			<&topckgen CLK_TOP_PWM3_FB>,
+			<&topckgen CLK_TOP_PWM4_FB>,
+			<&topckgen CLK_TOP_PWM5_FB>,
+			<&topckgen CLK_TOP_FLASHIF_FREERUN>,
+			<&topckgen CLK_TOP_CQDMA>,
+			<&topckgen CLK_TOP_66M_ETH>,
+			<&topckgen CLK_TOP_133M_ETH>,
+			<&topckgen CLK_TOP_FLASHIF_AXI>,
+			<&topckgen CLK_TOP_USBIF>,
+			<&topckgen CLK_TOP_UART2>,
+			<&topckgen CLK_TOP_GCPU_B>,
+			<&topckgen CLK_TOP_MSDC0_B>,
+			<&topckgen CLK_TOP_MSDC1_B>,
+			<&topckgen CLK_TOP_MSDC2_B>,
+			<&topckgen CLK_TOP_SPINOR>,
+			<&topckgen CLK_TOP_MSDC2>,
+			<&topckgen CLK_TOP_ETH>,
+			<&topckgen CLK_TOP_AUD1>,
+			<&topckgen CLK_TOP_AUD2>,
+			<&topckgen CLK_TOP_I2C>,
+			<&topckgen CLK_TOP_PWM_INFRA>,
+			<&topckgen CLK_TOP_AUD_SPDIF_IN>,
+			<&topckgen CLK_TOP_RG_UART2>,
+			<&topckgen CLK_TOP_DBG_AT>,
+			<&topckgen CLK_TOP_APLL12_DIV0>,
+			<&topckgen CLK_TOP_APLL12_DIV3>,
+			<&topckgen CLK_TOP_APLL12_DIV4>,
+			<&topckgen CLK_TOP_APLL12_DIV6>,
+			<&topckgen CLK_TOP_IMGRZ_SYS>,
+			<&topckgen CLK_TOP_PNG_SYS>,
+			<&topckgen CLK_TOP_GRAPH_E>,
+			<&topckgen CLK_TOP_FDBI>,
+			<&topckgen CLK_TOP_FAUDIO>,
+			<&topckgen CLK_TOP_FAUD_INTBUS>,
+			<&topckgen CLK_TOP_HAPLL1>,
+			<&topckgen CLK_TOP_HAPLL2>,
+			<&topckgen CLK_TOP_FA2SYS>,
+			<&topckgen CLK_TOP_FA1SYS>,
+			<&topckgen CLK_TOP_FASM_L>,
+			<&topckgen CLK_TOP_FASM_M>,
+			<&topckgen CLK_TOP_FASM_H>,
+			<&topckgen CLK_TOP_FECC>,
+			<&topckgen CLK_TOP_PE2_MAC>,
+			<&topckgen CLK_TOP_CMSYS>,
+			<&topckgen CLK_TOP_GCPU>,
+			<&topckgen CLK_TOP_SPIS>,
+			<&topckgen CLK_TOP_I2C3>,
+			<&topckgen CLK_TOP_SPI_SLV_B>,
+			<&topckgen CLK_TOP_SPI_SLV_BUS>,
+			<&topckgen CLK_TOP_PCIE_MAC_BUS>,
+			<&topckgen CLK_TOP_CMSYS_BUS>,
+			<&topckgen CLK_TOP_ECC_B>,
+			<&topckgen CLK_TOP_PCIE_PHY_BUS>,
+			<&topckgen CLK_TOP_PCIE_AUX>,
+			<&topckgen CLK_TOP_DISP_DPI>,
+			<&mmsys CLK_MM_SMI_COMMON>,
+			<&mmsys CLK_MM_SMI_LARB1>,
+			<&mmsys CLK_MM_FAKE>,
+			<&mmsys CLK_MM_DBI_AXI>,
+			<&mmsys CLK_MM_DPI>,
+			<&mmsys CLK_MM_DISP_DPI>;
+
+		clock-names =
+			"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+			"10", "11", "12", "13", "14", "15", "16", "17", "18",
+			"19", "20", "21", "22", "23", "24", "25", "26", "27",
+			"28", "29", "30", "31", "32", "33", "34", "35", "36",
+			"37", "38", "39", "40", "41", "42", "43", "44", "45",
+			"46", "47", "48", "49", "50", "51", "52", "53", "54",
+			"55", "56", "57", "58", "59", "60", "61", "62", "63",
+			"64", "65", "66", "67", "68", "69", "70", "71", "72",
+			"73", "74", "75", "76", "77", "78", "79", "80", "81",
+			"82", "83", "84", "85", "86", "87", "88", "89", "90",
+			"91", "92", "93", "94", "95", "96", "97", "98", "99",
+			"100", "101", "102", "103", "104", "105", "106",
+			"107", "108", "109";
+	};
+
+	bring-up-pd-disp {
+		compatible = "mediatek,scpsys-bring-up";
+		power-domains = <&scpsys MT8518_POWER_DOMAIN_DISP>;
+	};
+
+	bring-up-pd-audafe {
+		compatible = "mediatek,scpsys-bring-up";
+		power-domains = <&scpsys MT8518_POWER_DOMAIN_AUDAFE>;
+	};
+
+	bring-up-pd-audsrc {
+		compatible = "mediatek,scpsys-bring-up";
+		power-domains = <&scpsys MT8518_POWER_DOMAIN_AUDSRC>;
+	};
+};

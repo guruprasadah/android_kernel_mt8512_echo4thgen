@@ -1,0 +1,52 @@
+/*
+ * Copyright (c) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "laser-mt8512.dtsi"
+
+/ {
+	model = "Amazon Laser 1.1 HVT";
+	compatible = "amzn,laser-hvt1", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+};
+
+&tmp_112_i2c0_48 {
+	status = "okay";
+};
+
+&tmp_112_i2c0_49 {
+	status = "okay";
+};
+
+&tmp_112_i2c0_4a {
+	status = "okay";
+};
+
+&tmp_112_i2c0_4b {
+	status = "okay";
+};
+
+&tmp_112_i2c2_48 {
+	status = "okay";
+};
+
+&tmp_112_i2c2_49 {
+	status = "okay";
+};
+
+/delete-node/ &skin_virtual;
+/delete-node/ &skin_virtual_sensor;
+/delete-node/ &case_virtual;
+/delete-node/ &case_virtual_sensor;
+/delete-node/ &back_virtual;
+/delete-node/ &back_virtual_sensor;
+/delete-node/ &case1_virtual;
+/delete-node/ &case1_virtual_sensor;
+/delete-node/ &back1_virtual;
+/delete-node/ &back1_virtual_sensor;

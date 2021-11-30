@@ -1,0 +1,651 @@
+/*
+ * Copyright (c) 2018 MediaTek Inc.
+ * Copyright (C) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ */
+
+#include "mt8518-amzn.dtsi"
+
+/ {
+	aliases {
+		ringled0 = &lp5036_i2c0_30;
+		display0 = &lp5036_i2c2_30;
+	};
+
+	audio_spi: audio_spi {
+		compatible = "mediatek,mt8518-audio-spi";
+		memory-region = <&adsp_reserved_memory>;
+		status = "okay";
+	};
+
+	reset_adc: fixedregulator@6 {
+		compatible = "regulator-fixed";
+		regulator-name = "reset_adc";
+		gpio = <&pio 62 GPIO_ACTIVE_HIGH>;
+		startup-delay-us = <10000>;
+		enable-active-high;
+		status = "okay";
+	};
+
+	mt8518_audio_codec: mt8518_audio_codec {
+		compatible = "mediatek,mt8518-codec";
+		mediatek,afe-regmap = <&afe>;
+		mediatek,apmixedsys-regmap = <&apmixedsys>;
+		mediatek,downlink-nle-support = <1>;
+		clocks = <&topckgen CLK_TOP_FAUD_INTBUS>;
+		clock-names = "bus";
+	};
+
+	mt8570_audio_jack: mt8570_audio_jack {
+		compatible = "mediatek,mt8570-audio-jack";
+		status = "okay";
+	};
+
+	mt8570_ipi: mt8570_ipi {
+		compatible = "mediatek,mt8570_ipi";
+		interrupt-parent = <&pio>;
+		interrupts = <99 IRQ_TYPE_EDGE_RISING>;
+		status = "okay";
+	};
+
+	sound: sound {
+		compatible = "mediatek,mt8518-brownie";
+		mediatek,platform = <&afe>;
+		mediatek,spi-platform = <&audio_spi>;
+
+		/* ADC5140 - over SPI */
+		mediatek,spi-mic-audio-codec = <&tlv320adc5140_1>;
+		mediatek,spi-mic-audio-codec-name = "tlv320adc5140";
+		mediatek,spi-mic-codec-dai-name = "tlv320adc5140-codec-a";
+		mediatek,spi-mic-format = "dsp_b";
+		mediatek,spi-mic-bck-inverse=<1>;
+		mediatek,spi-mic-mclk-multiplier=<256>;
+		mediatek,spi-mic-master-clock=<0>;
+
+		/* Line Out - over int adda */
+		mediatek,int-adda-audio-codec = <&mt8518_audio_codec>;
+		mediatek,int-adda-codec-dai-name = "mt8518-codec-dai";
+
+		/* Spkr Out - over etdm2 */
+		mediatek,etdm2-out-audio-codec = <&tas5805m_1_dac>;
+		mediatek,etdm2-out-audio-codec-name = "tas5805m_1-dac";
+		mediatek,etdm2-out-codec-dai-name = "tas5805m-amplifier-a";
+		mediatek,etdm2-out-master-clock=<1>;
+		mediatek,etdm2-out-force-on;
+		mediatek,etdm2-out-force-format = "i2s";
+		mediatek,etdm2-out-force-rate = <48000>;
+		mediatek,etdm2-out-force-channels = <2>;
+		mediatek,etdm2-out-force-bit-width = <32>;
+
+		/* For DSP TDM_IN
+		 * mediatek,spi-mic-audio-codec=<&tlv320_audio_codec>;
+		 * mediatek,spi-mic-codec-dai-name="tlv320aic3101-codec";
+		*/
+
+		/* For AP External DAC
+		 * mediatek,etdm2-out-audio-codec = <&tas5805_audio_codec>;
+		 * mediatek,etdm2-out-codec-dai-name = "tas5805-codec";
+		*/
+
+		pinctrl-names = "default", "extamp_on", "extamp_off";
+		pinctrl-0 = <&aud_pins_default>;
+		pinctrl-1 = <&aud_pins_extamp_on>;
+		pinctrl-2 = <&aud_pins_extamp_off>;
+		status = "okay";
+	};
+
+	led_power: fixedregulator@6 {
+		compatible = "regulator-fixed";
+		regulator-name = "led_power";
+		gpio = <&pio 117 0x0>;
+		startup-delay-us = <10000>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&led_power_pins>;
+		status = "okay";
+	};
+
+	therm0: thermistor_0 {
+		compatible = "murata,ncp03wf104";
+		#thermal-sensor-cells = <0>;
+		pullup-uv = <1800000>;
+		pullup-ohm = <100000>;
+		pulldown-ohm = <0>;
+		io-channels = <&auxadc 0>;
+	};
+
+	therm1: thermistor_1 {
+		compatible = "murata,ncp03wf104";
+		#thermal-sensor-cells = <0>;
+		pullup-uv = <1800000>;
+		pullup-ohm = <100000>;
+		pulldown-ohm = <0>;
+		io-channels = <&auxadc 1>;
+	};
+
+	therm2: thermistor_2 {
+		compatible = "murata,ncp03wf104";
+		#thermal-sensor-cells = <0>;
+		pullup-uv = <1800000>;
+		pullup-ohm = <100000>;
+		pulldown-ohm = <0>;
+		io-channels = <&auxadc 12>;
+	};
+
+	wifi_temp_sensor: wifi_temp_sensor {
+		compatible = "amazon,wifi_temp_sensor";
+		#thermal-sensor-cells = <0>;
+	};
+
+	case_virtual_sensor: case-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	skin_virtual_sensor: skin-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	back_virtual_sensor: back-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	cpu_virtual_sensor: cpu-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	cpufilter_virtual_sensor: cpufilter-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+		moving-average-prop = <1000 5 100 0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	wifi_cooler: wifi {
+		compatible = "amazon,thermal_cooler";
+		#cooling-cells = <2>;
+		max_state = <8>;
+	};
+
+	audio_cooler: audio_cooler {
+		compatible = "amazon,thermal_cooler";
+		#cooling-cells = <2>;
+		max_level = <3>;
+		max_state = <8>;
+	};
+
+	led_cooler: led_cooler {
+		compatible = "amazon,thermal_cooler";
+		#cooling-cells = <2>;
+		max_state = <3>;
+	};
+
+	suspend_cooler: suspend_cooler {
+		compatible = "amazon,thermal_cooler";
+		#cooling-cells = <2>;
+		max_state = <2>;
+	};
+};
+
+&pwm {
+	status = "okay";
+};
+
+&gpio_keys{
+	autorepeat;
+	status = "okay";
+};
+
+&volumeup_button {
+	gpios = <&pio 68 GPIO_ACTIVE_LOW>;
+};
+
+&volumedown_button {
+	gpios = <&pio 69 GPIO_ACTIVE_LOW>;
+};
+
+&action_button {
+	gpios = <&pio 61 GPIO_ACTIVE_LOW>;
+};
+
+&gpio_keys_default {
+	pins_cmd_dat {
+		pinmux = <MT8518_PIN_68_I2SO_D2__FUNC_GPIO68>,
+			<MT8518_PIN_69_I2SO_D3__FUNC_GPIO69>,
+			<MT8518_PIN_61_EINT20__FUNC_GPIO61>;
+		bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+		input-enable;
+	};
+	pins_cmd_dat1 {
+		pinmux = <MT8518_PIN_60_EINT19__FUNC_GPIO60>;
+		input-enable;
+		bias-pull-down;
+	};
+};
+
+&mmc2_fixed_1v8_io {
+	gpio = <&pio 55 0>;
+};
+
+&i2c0 {
+	status = "okay";
+
+	lp5036_i2c0_30: lp5036@30 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	compatible = "ti,lp5036";
+	reg = <0x30>;
+	vled-supply = <&led_power>;
+	status = "okay";
+		led@0 {
+			reg = <0>;
+			label = "ledmod_0";
+			ti,led-module = <11>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@1 {
+			reg = <1>;
+			label = "ledmod_1";
+			ti,led-module = <10>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@2 {
+			reg = <2>;
+			label = "ledmod_2";
+			ti,led-module = <9>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@3 {
+			reg = <3>;
+			label = "ledmod_3";
+			ti,led-module = <8>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@4 {
+			reg = <4>;
+			label = "ledmod_4";
+			ti,led-module = <7>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@5 {
+			reg = <5>;
+			label = "ledmod_5";
+			ti,led-module = <6>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@6 {
+			reg = <6>;
+			label = "ledmod_6";
+			ti,led-module = <5>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@7 {
+			reg = <7>;
+			label = "ledmod_7";
+			ti,led-module = <4>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@8 {
+			reg = <8>;
+			label = "ledmod_8";
+			ti,led-module = <3>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@9 {
+			reg = <9>;
+			label = "ledmod_9";
+			ti,led-module = <2>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@10 {
+			reg = <10>;
+			label = "ledmod_10";
+			ti,led-module = <1>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@11 {
+			reg = <11>;
+			label = "ledmod_11";
+			ti,led-module = <0>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+	};
+
+	tmp_sensor_i2c0_48: tmp108@48 {
+		compatible = "ti,tmp108";
+		reg = <0x48>;
+		status = "okay";
+	};
+
+	tmp_sensor_i2c0_49: tmp108@49 {
+		compatible = "ti,tmp108";
+		reg = <0x49>;
+		status = "okay";
+	};
+
+	pcf85063: rtc@51 {
+		compatible = "nxp,pcf85063";
+		reg = <0x51>;
+		interrupt-parent = <&pio>;
+		interrupts = <57 IRQ_TYPE_LEVEL_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&rtc_irq>;
+	};
+};
+
+&i2c2 {
+	lp5036_i2c2_30: lp5036@30 {
+		compatible = "ti,lp5036-frame";
+		reg = <0x30>;
+		channel-map = /bits/ 8 <3 9 2 5 11 10 8 6 7 1
+			14 16 15 12 4 13 18 17 34 31
+			23 20 19 21 22 33 29 27 25 24
+			30 28 32 26 0 35>;
+		enable-gpio = <&pio 118 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+	};
+
+	tsl25723_i2c2_39: tsl25723@39 {
+		compatible = "tsl2572";
+		reg = <0x39>;
+		auto-gain;
+		autozero;
+		vis-ir-ratios = <0x2D>;
+		num-coeffs-per-eqn = <3>;
+		num-cap-colors = <2>;
+		equation-version = <1>;
+		coeffs = <0x2CDE1D50 0x2710 0xFFFFBBE5
+			  0x2CDE1D50 0xBD2 0xFFFFEFD3
+			  0xDFEF260 0x2710 0xFFFFAEB7
+			  0xDFEF260 0x5B7 0xFFFFF829>;
+	};
+
+	tmp_sensor_i2c2_48: tmp108@48 {
+		compatible = "ti,tmp108";
+		reg = <0x48>;
+		status = "okay";
+	};
+
+	tmp_sensor_i2c2_49: tmp108@49 {
+		compatible = "ti,tmp108";
+		reg = <0x49>;
+		status = "okay";
+	};
+
+	lis2dw12_i2c2_19: lis2dw12@19 {
+		compatible = "st,lis2dw12";
+		reg = <0x19>;
+		interrupt-parent = <&pio>;
+		interrupts = <119 (IRQ_TYPE_LEVEL_LOW)>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&lis2dw12_pins>;
+		status = "okay";
+	};
+
+	tlv320adc5140_1: tlv320adc5140@4c {
+		compatible = "ti,tlv320adc5140";
+		reg = <0x4c>;
+		reset-adc-regulator-supply = <&reset_adc>;
+		adc-num = <0>;
+		status = "okay";
+	};
+};
+
+#include "brownie_thermal_zones.dtsi"
+
+&afe {
+	mediatek,etdm-out-data-modes = <0 1>;
+	mediatek,etdm-in-data-modes = <1 0>;
+	status = "okay";
+};
+
+&auxadc {
+	status = "okay";
+};
+
+&pwm_pins_default {
+	pins_cmd_dat {
+		pinmux = <MT8518_PIN_47_EINT11__FUNC_PWM_A>;
+	};
+};
+
+&pio {
+	pinctrl-names = "default";
+	led_power_pins: led_pwr_pins {
+		pins_fixed_regulator {
+			pinmux = <MT8518_PIN_117_MSDC1_DAT1__FUNC_GPIO117>;
+			bias-pull-up;
+		};
+	};
+
+	lis2dw12_pins: lis2dw12_pins {
+		pins_dat {
+			pinmux = <MT8518_PIN_119_MSDC1_DAT3__FUNC_GPIO119>;
+			bias-pull-up;
+		};
+	};
+
+/* Audio GPIO Start */
+/* Pins need to be updated */
+	aud_pins_default: audiodefault {
+		pins_dat {
+			pinmux = <MT8518_PIN_24_PWRAP_SPI_CSN__FUNC_PCM_SYNC>,
+				<MT8518_PIN_25_PWRAP_SPI_MOSI__FUNC_PCM_CLK>,
+				<MT8518_PIN_26_PWRAP_SPI_MISO__FUNC_PCM_TX>,
+				<MT8518_PIN_27_PWRAP_INT__FUNC_PCM_RX>,
+				<MT8518_PIN_64_I2SO_BCK__FUNC_I2SO_BCKA>,
+				<MT8518_PIN_65_I2SO_LRCK__FUNC_I2SO_LRCKA>,
+				<MT8518_PIN_66_I2SO_D0__FUNC_I2SO_D0>;
+		};
+	};
+
+	aud_pins_extamp_on: audexampon {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_36_EINT0__FUNC_GPIO36>;
+			output-high;
+		};
+	};
+
+	aud_pins_extamp_off: audexampoff {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_36_EINT0__FUNC_GPIO36>;
+			output-low;
+		};
+	};
+/* Audio GPIO End */
+
+/* USB GPIO start */
+/* Not sure if this is needed */
+	usb0_drvvbus: drvvbus_init {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_56_IR__FUNC_GPIO56>;
+			output-low;
+		};
+	};
+
+	usb0_drvvbus_high: drvvbus_high {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_56_IR__FUNC_GPIO56>;
+			output-high;
+		};
+	};
+
+	usb0_drvvbus_low: drvvbus_low {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_56_IR__FUNC_GPIO56>;
+			output-low;
+		};
+	};
+
+	usb0_iddig: iddig_irq_init {
+		pins_cmd_dat {
+			pinmux = <MT8518_PIN_58_EINT17__FUNC_GPIO58>;
+			bias-pull-up;
+		};
+	};
+/* USB GPIO end */
+
+	rtc_irq: rtc_pins {
+		pins_irq {
+			pinmux = <MT8518_PIN_57_EINT16__FUNC_GPIO57>;
+			bias-disable;
+		};
+	};
+};
+
+&spi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi_pins_1>;
+	mediatek,pad-select = <0>;
+	status = "okay";
+
+	spidev1: spi@0 {
+		compatible = "mediatek,hifi4dsp-spi";
+		reg = <0>;
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <4>;
+		spi-max-frequency = <12000000>;
+	};
+};
+
+&svs {
+	vproc-supply = <&mt6395_vproc>;
+};
+
+&usb0 {
+	interrupts-extended = <&sysirq GIC_SPI 72 IRQ_TYPE_LEVEL_LOW>;
+	pinctrl-names = "iddig_irq_init",
+			"drvvbus_init",
+			"drvvbus_low",
+			"drvvbus_high";
+	pinctrl-0 = <&usb0_iddig>;
+	pinctrl-1 = <&usb0_drvvbus>;
+	pinctrl-2 = <&usb0_drvvbus_low>;
+	pinctrl-3 = <&usb0_drvvbus_high>;
+	status = "okay";
+	sw_default_mode = <1>;
+	iddig_gpio = <&pio 58 GPIO_ACTIVE_HIGH>;
+	drvvbus_gpio = <&pio 56 GPIO_ACTIVE_HIGH>;
+};
+
+&mt6395 {
+	mt6395,irq-gpios = <&pio 23 0x0>;
+	status = "okay";
+};
+
+&mmc2_fixed_3v3 {
+	status = "disabled";
+};
+
+&mmc1 {
+	status = "disabled";
+};
+
+&mmc2 {
+	status = "okay";
+	eint-gpios = <&pio 32 0>;
+	vmmc-supply = <&mmc_fixed_3v3>;
+	vqmmc-supply = <&mmc2_fixed_1v8_io>;
+};
+
+&pmic_irq_pins {
+	pins_bus {
+		pinmux = <MT8518_PIN_23_PWRAP_SPI_CLK__FUNC_GPIO23>;
+	};
+};
+
+&mmc2_reset {
+	pins_cmd_dat {
+		pinmux = <MT8518_PIN_55_UCTS1__FUNC_GPIO55>;
+		output-high;
+	};
+};
+
+&hifi4dsp_load {
+    firmware-file = "hifi4dsp_load_brownie.bin";
+};
+
+/* GPIO_114 needs to be repurposed as AUX_DETECT_L or Audio, so need to delete the node where it is used for other purposes
+* in inherited mt8518-amzn.dtsi file.
+*/
+&mmc1_pins_default {
+	/delete-node/ pins_cmd_dat;
+};
+
+&mmc1_pins_uhs {
+	/delete-node/ pins_cmd_dat;
+};
+
+/* GPIO 35 needs to be repurposed as AMP_PD_L for Audio, so need to delete the node where it is used for other purposes
+* in inherited mt8518-amzn.dtsi file.
+*/
+&mmc2_pins_uhs {
+	/delete-node/ pins_ds;
+};
+
+#include "mt6395.dtsi"
+
+/delete-node/ &cpufilter_virtual;
+/delete-node/ &cpufilter_virtual_sensor;
+/delete-node/ &back_virtual;
+/delete-node/ &back_virtual_sensor;

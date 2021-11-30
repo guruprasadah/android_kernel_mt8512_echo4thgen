@@ -1,0 +1,180 @@
+/*
+ * Copyright (c) 2019 MediaTek Inc.
+ *
+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ */
+
+#include "mt8512.dtsi"
+
+/ {
+	compatible = "mediatek,mt8512";
+
+	cluster0_opp: opp_table0 {
+		compatible = "operating-points-v2";
+		opp-shared;
+		opp00 {
+			opp-hz = /bits/ 64 <600000000>;
+			opp-microvolt = <800000>;
+		};
+		opp01 {
+			opp-hz = /bits/ 64 <666000000>;
+			opp-microvolt = <800000>;
+		};
+		opp02 {
+			opp-hz = /bits/ 64 <733000000>;
+			opp-microvolt = <800000>;
+		};
+		opp03 {
+			opp-hz = /bits/ 64 <833000000>;
+			opp-microvolt = <800000>;
+		};
+		opp04 {
+			opp-hz = /bits/ 64 <1000000000>;
+			opp-microvolt = <800000>;
+		};
+		opp05 {
+			opp-hz = /bits/ 64 <1133000000>;
+			opp-microvolt = <800000>;
+		};
+		opp06 {
+			opp-hz = /bits/ 64 <1266000000>;
+			opp-microvolt = <800000>;
+		};
+		opp07 {
+			opp-hz = /bits/ 64 <1400000000>;
+			opp-microvolt = <800000>;
+		};
+		opp08 {
+			opp-hz = /bits/ 64 <1467000000>;
+			opp-microvolt = <825000>;
+		};
+		opp09 {
+			opp-hz = /bits/ 64 <1534000000>;
+			opp-microvolt = <850000>;
+		};
+		opp10 {
+			opp-hz = /bits/ 64 <1588000000>;
+			opp-microvolt = <868750>;
+		};
+		opp11 {
+			opp-hz = /bits/ 64 <1702000000>;
+			opp-microvolt = <912500>;
+		};
+		opp12 {
+			opp-hz = /bits/ 64 <1786000000>;
+			opp-microvolt = <943750>;
+		};
+		opp13 {
+			opp-hz = /bits/ 64 <1870000000>;
+			opp-microvolt = <975000>;
+		};
+		opp14 {
+			opp-hz = /bits/ 64 <1938000000>;
+			opp-microvolt = <1000000>;
+		};
+		opp15 {
+			opp-hz = /bits/ 64 <2000000000>;
+			opp-microvolt = <1025000>;
+		};
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x0>;
+			enable-method = "psci";
+			cpu-idle-states = <&MCDI_CPU &MCDI_CLUSTER &DPIDLE>;
+			clocks = <&mcucfg CLK_MCU_BUS_SEL>,
+				<&topckgen CLK_TOP_UNIVPLL_D2>,
+				<&apmixedsys CLK_APMIXED_ARMPLL>;
+			clock-names = "cpu", "intermediate", "armpll";
+			operating-points-v2 = <&cluster0_opp>;
+			#cooling-cells = <2>;
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x1>;
+			enable-method = "psci";
+			cpu-idle-states = <&MCDI_CPU &MCDI_CLUSTER &DPIDLE>;
+			clocks = <&mcucfg CLK_MCU_BUS_SEL>,
+				<&topckgen CLK_TOP_UNIVPLL_D2>,
+				<&apmixedsys CLK_APMIXED_ARMPLL>;
+			clock-names = "cpu", "intermediate", "armpll";
+			operating-points-v2 = <&cluster0_opp>;
+		};
+
+		cpu-map {
+			cluster0 {
+				core0 {
+					cpu = <&cpu0>;
+				};
+				core1 {
+					cpu = <&cpu1>;
+				};
+			};
+		};
+
+		energy-costs {
+			MT8512_CPU_COST_0: mt8512-core-cost0 {
+				busy-cost-data = <0 0>;
+				idle-cost-data = <0>;
+			};
+			MT8512_CLUSTER_COST_0: mt8512-cluster-cost0 {
+				busy-cost-data = <0 0>;
+				idle-cost-data = <0>;
+			};
+		};
+
+		idle-states {
+			entry-method = "psci";
+
+			MCDI_CPU: mcdi-cpu {
+				compatible = "arm,idle-state";
+				local-timer-stop;
+				arm,psci-suspend-param = <0x00010001>;
+				entry-latency-us = <300>;
+				exit-latency-us = <200>;
+				min-residency-us = <1000>;
+			};
+
+			MCDI_CLUSTER: mcdi-cluster {
+				compatible = "arm,idle-state";
+				local-timer-stop;
+				arm,psci-suspend-param = <0x01010001>;
+				entry-latency-us = <350>;
+				exit-latency-us = <250>;
+				min-residency-us = <1200>;
+			};
+
+			DPIDLE: dpidle {
+				compatible = "arm,idle-state";
+				local-timer-stop;
+				arm,psci-suspend-param = <0x01010004>;
+				entry-latency-us = <300>;
+				exit-latency-us = <1500>;
+				min-residency-us = <4000>;
+			};
+		};
+	};
+
+	svs: svs@1100b000 {
+		compatible = "mediatek,mt8512-svs";
+		reg = <0 0x1100b000 0 0x1000>;
+		interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_LOW>;
+		clocks = <&infrasys CLK_INFRA_THERM>;
+		clock-names = "main_clk";
+		nvmem-cells = <&svs_calibration>;
+		nvmem-cell-names = "svs-calibration-data";
+
+		svs_cpu_little: svs_cpu_little {
+			compatible = "mediatek,mt8512-svs-cpu-little";
+			operating-points-v2 = <&cluster0_opp>;
+		};
+	};
+};

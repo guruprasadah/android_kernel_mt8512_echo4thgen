@@ -1,0 +1,17 @@
+/*
+ * Copyright (c) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "mopac.dtsi"
+
+/ {
+	model = "Amazon Mopac Proto";
+	compatible = "amzn,mopac-proto", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+};

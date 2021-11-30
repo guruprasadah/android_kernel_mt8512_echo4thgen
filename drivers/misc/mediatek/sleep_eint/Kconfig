@@ -1,0 +1,9 @@
+#
+# MediaTek Sleep EINT support
+#
+
+config MTK_SLEEP_EINT_SUPPORT
+	bool "Mediatek Sleep EINT Support"
+	---help---
+	  Enables to support sleep controlled by gpio input.
+	  If unsure, say N.

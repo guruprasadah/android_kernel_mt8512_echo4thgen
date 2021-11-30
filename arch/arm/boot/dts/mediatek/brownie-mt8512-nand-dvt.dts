@@ -1,0 +1,73 @@
+/*
+ * Copyright (c) 2020 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "brownie-mt8512.dtsi"
+
+/ {
+	model = "Amazon Brownie DVT/PVT";
+	compatible = "amzn,brownie-mt8512-nand-dvt", "amzn,brownie-mt8512-nand-pvt", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+
+	reset_adc: fixedregulator@7 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&adc_reset_default>;
+	};
+};
+
+&nandc {
+	status = "okay";
+};
+
+&auxadc {
+	expected-divider-voltage-raw = <900>;
+	ref-voltage-adc-channel = <3>;
+	has-error-correction;
+	status = "okay";
+};
+
+&pio {
+	mmc1_pins_default: mmc1default {
+		pins_wifi_reset {
+			pinmux = <MT8512_PIN_44_PWM0__FUNC_GPIO44>;
+			input-enable;
+			bias-disable;
+		};
+	};
+
+	adc_reset_default: adcreset {
+		pins_cmd_dat {
+			pinmux = <MT8512_PIN_17_GPIO17__FUNC_GPIO17>;
+			output-high;
+			bias-pull-up;
+		};
+	};
+};
+
+&pwm {
+	invert = <1>;
+};
+
+&volumeup_button {
+	swdebounce-interval = <100>;
+	dyndebounce-interval = <0>;
+	dyndebounce-duration = <10000>;		/* 10 sec */
+};
+
+&volumedown_button {
+	swdebounce-interval = <100>;
+	dyndebounce-interval = <0>;
+	dyndebounce-duration = <10000>;		/* 10 sec */
+};
+
+&action_button {
+	swdebounce-interval = <100>;
+	dyndebounce-interval = <0>;
+	dyndebounce-duration = <10000>;		/* 10 sec */
+};

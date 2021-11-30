@@ -1,0 +1,18 @@
+#
+# MediaTek HIFI4DSP SPI and Load Driver
+#
+
+config MTK_HIFI4DSP_SUPPORT
+	bool "Mediatek HIFI4DSP SPI and Load Driver"
+	default n
+	---help---
+	  Enables to support HIFI4DSP bootup at linux kernel stage with SPI communication.
+	  If unsure, say N.
+
+config MTK_HIFI4DSP_CHECK_DSP_DVFS
+	bool "Mediatek HIFI4DSP SPI check DSP CLK Status"
+	depends on MTK_HIFI4DSP_SUPPORT
+	default n
+	---help---
+	  Enables to support HIFI4DSP bootup at linux kernel stage with SPI communication.
+	  If unsure, say N.

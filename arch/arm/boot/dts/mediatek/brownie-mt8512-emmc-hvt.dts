@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) 2019 - 2020 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "brownie-mt8512.dtsi"
+
+/ {
+	model = "Amazon Brownie";
+	compatible = "amzn,brownie-mt8512-emmc-hvt", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+};
+
+&mmc0 {
+	status = "okay";
+};
+
+&i2c0 {
+	/* Display LED, should be removed for Brownie in future */
+	lp5036_i2c0_30: lp5036@30 {
+		status = "okay";
+	};
+
+	tmp_sensor_i2c0_48: tmp108@48 {
+		status = "okay";
+	};
+
+	tmp_sensor_i2c0_49: tmp108@49 {
+		status = "okay";
+	};
+
+	/* Temp sensor on display LED, should be removed for Brownie in future */
+	tmp_sensor_12c0_4B: tmp108@4B {
+		status = "okay";
+	};
+};
+
+&tmp_sensor_i2c2_48 {
+	status = "okay";
+};

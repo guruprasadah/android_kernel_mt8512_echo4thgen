@@ -1,0 +1,60 @@
+/*
+ * Copyright (c) 2018 MediaTek Inc.
+ *
+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ */
+
+&mt6395 {
+	mt6395_vproc: mt6395_buck1 {
+		regulator-compatible = "mt6395_buck1";
+		regulator-name = "VPROC";
+		regulator-min-microvolt = <600000>;
+		regulator-max-microvolt = <1393750>;
+		/*
+		 * There are 4 levels for mt6395_buck1
+		 * (1) 5000 uV/us
+		 * (2) 10000 uV/us
+		 * (3) 15000 uV/us
+		 * (4) 20000 uV/us
+		 */
+		regulator-ramp-delay = <20000>; /* uV/us */
+		regulator-boot-on;
+		regulator-always-on;
+	};
+
+	mt6395_vccio: mt6395_buck2 {
+		regulator-compatible = "mt6395_buck2";
+		regulator-name = "VCCIO";
+		regulator-min-microvolt = <1100000>;
+		regulator-max-microvolt = <1100000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+
+	mt6395_vio18: mt6395_buck3 {
+		regulator-compatible = "mt6395_buck3";
+		regulator-name = "VIO18";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+
+	mt6395_vio33: mt6395_buck4 {
+		regulator-compatible = "mt6395_buck4";
+		regulator-name = "VIO33";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+
+	mt6395_ldo1: mt6395_ldo1 {
+		regulator-compatible = "mt6395_ldo1";
+		regulator-name = "mt6395_ldo1";
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1200000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+};

@@ -1,0 +1,16 @@
+#
+# GPT as RTC driver configuration
+#
+
+config RTC_DRV_GPT
+	tristate "Mediatek APXGPT as RTC driver"
+	depends on RTC_LIB && !RTC_HCTOSYS
+	help
+	  This selects Mediatek APXGPT as RTC driver due to some platforms
+	  havn't RTC hardware.
+	  This solution has some limitations:
+	  1. cannot support set_time
+	  2. APXGPT needs use 32K(32768) clock source
+	  3. cannot support HCTOSYS feature
+	  If you want to use Mediatek APXGPT as RTC interface,
+	  select Y or M here

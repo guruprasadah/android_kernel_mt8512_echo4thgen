@@ -1,0 +1,35 @@
+config HALO_NET
+	bool "Amazon Halo network driver"
+	default n
+	help
+	  Select this option to enable the Halo network driver.
+
+config HALO_NET_SPI
+	bool "Amazon Halo network driver SPI interface"
+	default n
+	help
+	  Select this option if the interface is a SPI.
+
+config HALO_NET_SPI_BUS_NUM
+	int "SPI bus number which is connected with nRF MCU"
+	depends on HALO_NET_SPI
+	range 0 32768
+	default 0
+	help
+	  This option overrides SPI CS_SETUP and CS_HOLD offset values as optimum
+	  for the SPI bus number which is connected with nRF MCU in order to achieve
+	  the maximun supported speed (8MHz) from nRF MCU.
+
+	  Examples:
+	    32766 => spi0: spi@1100a000
+	    32765 => spi1: spi@11010000
+	    32764 => spi2: spi@11012000
+	    32763 => spi3: spi@11013000
+	    32762 => spi4: spi@11018000
+	    32761 => spi5: spi@11019000
+
+config HALO_NET_UART
+	bool "Amazon Halo network driver UART interface"
+	default n
+	help
+	  Select this option if the interface is a UART.

@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) 2019 - 2020 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "brownie-mt8512.dtsi"
+
+/ {
+	model = "Amazon Brownie";
+	compatible = "amzn,brownie-mt8512-nand-hvt", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+};
+
+&nandc {
+	status = "okay";
+};
+
+&i2c0 {
+	tmp_sensor_i2c0_48: tmp108@48 {
+		status = "okay";
+	};
+
+	tmp_sensor_i2c0_49: tmp108@49 {
+		status = "okay";
+	};
+};
+
+&tmp_sensor_i2c2_48 {
+	status = "okay";
+};

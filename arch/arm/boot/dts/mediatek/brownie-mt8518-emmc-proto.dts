@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ */
+
+/dts-v1/;
+#include "brownie-mt8518.dtsi"
+
+/ {
+	model = "Amazon Brownie";
+	compatible = "amzn,brownie-mt8518-emmc-proto", "mediatek,mt8518";
+
+	chosen {
+		bootargs = "console=ttyS0,921600n1 root=/dev/mmcblk0p13 init=/init \
+rootwait earlycon=uart8250,mmio32,\
+0x11005000 initcall_debug loglevel=8 \
+androidboot.hardware=mt8518 androidboot.selinux=permissive \
+firmware_class.path=/vendor/firmware";
+	};
+};
+
+&i2c0 {
+	tas5805m_1_dac: tas5805m@2c {
+		compatible = "ti,tas5805m";
+		reg = <0x2c>;
+		reset-gpio = <8>;
+		dac-num = <0>;
+		speaker-config = <1>;
+		status = "okay";
+	};
+};

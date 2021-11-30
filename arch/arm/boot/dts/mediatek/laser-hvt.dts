@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "laser.dtsi"
+
+/ {
+	model = "Amazon Laser HVT";
+	compatible = "amzn,laser-hvt", "mediatek,mt8518";
+
+	chosen {
+		bootargs = "console=ttyS0,921600n1 root=/dev/mmcblk0p13 init=/init \
+rootwait earlycon=uart8250,mmio32,\
+0x11005000 initcall_debug loglevel=8 \
+androidboot.hardware=mt8518 androidboot.selinux=permissive \
+firmware_class.path=/vendor/firmware";
+	};
+};
+
+&tmp_108_i2c0_48 {
+	status = "disabled";
+};
+
+&tmp_108_i2c0_49 {
+	status = "disabled";
+};
+
+&tmp_112_i2c0_48 {
+	status = "okay";
+};
+
+&tmp_112_i2c0_49 {
+	status = "okay";
+};
+
+&tmp_112_i2c0_4a {
+	status = "okay";
+};
+
+&tmp_112_i2c0_4b {
+	status = "okay";
+};
+
+&i2c0 {
+	tas5805m_1_dac: tas5805m@2c {
+		compatible = "ti,tas5805m";
+		reg = <0x2c>;
+		use-ap-gpio;
+		reset-gpio = <&pio 35 GPIO_ACTIVE_HIGH>;
+		dac-num = <0>;
+		speaker-config = <2>;
+		status = "okay";
+	};
+
+	tas5805m_2_dac: tas5805m@2d {
+		compatible = "ti,tas5805m";
+		reg = <0x2d>;
+		dac-num = <1>;
+		speaker-config = <3>;
+		status = "okay";
+	};
+};
+
+&hifi4dsp_load {
+	firmware-file = "hifi4dsp_load_hvt.bin";
+};

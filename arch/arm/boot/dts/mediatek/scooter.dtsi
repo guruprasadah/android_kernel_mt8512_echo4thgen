@@ -1,0 +1,327 @@
+/*
+ * Copyright (c) 2019 MediaTek Inc.
+ * Copyright (C) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0 OR MIT)
+ */
+
+#include "mt8512-amzn.dtsi"
+
+&adsp {
+	status = "disabled";
+};
+
+&adsp_pcm {
+	status = "disabled";
+};
+
+&i2c0 {
+	status = "disabled";
+};
+
+&i2c1 {
+	status = "okay";
+	clock-frequency = <400000>;
+};
+
+&i2c2 {
+	status = "disabled";
+};
+
+&gpio_privacy {
+	status = "disabled";
+};
+
+&spis {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spis_pins>;
+	slave-ready-gpio = <&pio 4 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+	task-rt;
+
+	slave: slave {
+		compatible = "spinet-slave";
+		data-ready-gpio = <&pio 0 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+&pio {
+	pinctrl-names = "default";
+
+	mmc0_pins_default: mmc0default {
+		pins_clk {
+			pinmux = <MT8512_PIN_82_MSDC0_CLK__FUNC_MSDC0_CLK>;
+			bias-pull-down;
+		};
+
+		pins_cmd_dat {
+			pinmux = <MT8512_PIN_86_MSDC0_DAT0__FUNC_MSDC0_DAT0>,
+				 <MT8512_PIN_85_MSDC0_DAT1__FUNC_MSDC0_DAT1>,
+				 <MT8512_PIN_84_MSDC0_DAT2__FUNC_MSDC0_DAT2>,
+				 <MT8512_PIN_83_MSDC0_DAT3__FUNC_MSDC0_DAT3>,
+				 <MT8512_PIN_79_MSDC0_DAT4__FUNC_MSDC0_DAT4>,
+				 <MT8512_PIN_78_MSDC0_DAT5__FUNC_MSDC0_DAT5>,
+				 <MT8512_PIN_77_MSDC0_DAT6__FUNC_MSDC0_DAT6>,
+				 <MT8512_PIN_76_MSDC0_DAT7__FUNC_MSDC0_DAT7>,
+				 <MT8512_PIN_81_MSDC0_CMD__FUNC_MSDC0_CMD>;
+			input-enable;
+			bias-pull-up;
+		};
+
+		pins_rst {
+			pinmux = <MT8512_PIN_80_MSDC0_RSTB__FUNC_MSDC0_RSTB>;
+			bias-pull-up;
+		};
+	};
+
+	mmc0_pins_uhs: mmc0 {
+		pins_clk {
+			pinmux = <MT8512_PIN_82_MSDC0_CLK__FUNC_MSDC0_CLK>;
+			drive-strength = <MTK_DRIVE_6mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_01>;
+		};
+
+		pins_cmd_dat {
+			pinmux = <MT8512_PIN_86_MSDC0_DAT0__FUNC_MSDC0_DAT0>,
+				 <MT8512_PIN_85_MSDC0_DAT1__FUNC_MSDC0_DAT1>,
+				 <MT8512_PIN_84_MSDC0_DAT2__FUNC_MSDC0_DAT2>,
+				 <MT8512_PIN_83_MSDC0_DAT3__FUNC_MSDC0_DAT3>,
+				 <MT8512_PIN_79_MSDC0_DAT4__FUNC_MSDC0_DAT4>,
+				 <MT8512_PIN_78_MSDC0_DAT5__FUNC_MSDC0_DAT5>,
+				 <MT8512_PIN_77_MSDC0_DAT6__FUNC_MSDC0_DAT6>,
+				 <MT8512_PIN_76_MSDC0_DAT7__FUNC_MSDC0_DAT7>,
+				 <MT8512_PIN_81_MSDC0_CMD__FUNC_MSDC0_CMD>;
+			input-enable;
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+		};
+
+		pins_rst {
+			pinmux = <MT8512_PIN_80_MSDC0_RSTB__FUNC_MSDC0_RSTB>;
+			bias-pull-up;
+		};
+	};
+
+	mmc0_pins_sleep: mmc0sleep {
+		pins_clk {
+			pinmux = <MT8512_PIN_82_MSDC0_CLK__FUNC_GPIO82>;
+			bias-disable;
+			input-disable;
+		};
+
+		pins_cmd_dat {
+			pinmux = <MT8512_PIN_86_MSDC0_DAT0__FUNC_GPIO86>,
+				 <MT8512_PIN_85_MSDC0_DAT1__FUNC_GPIO85>,
+				 <MT8512_PIN_84_MSDC0_DAT2__FUNC_GPIO84>,
+				 <MT8512_PIN_83_MSDC0_DAT3__FUNC_GPIO83>,
+				 <MT8512_PIN_79_MSDC0_DAT4__FUNC_GPIO79>,
+				 <MT8512_PIN_78_MSDC0_DAT5__FUNC_GPIO78>,
+				 <MT8512_PIN_77_MSDC0_DAT6__FUNC_GPIO77>,
+				 <MT8512_PIN_76_MSDC0_DAT7__FUNC_GPIO76>,
+				 <MT8512_PIN_81_MSDC0_CMD__FUNC_GPIO81>;
+			bias-disable;
+			input-disable;
+		};
+
+		pins_rst {
+			pinmux = <MT8512_PIN_80_MSDC0_RSTB__FUNC_GPIO80>;
+			bias-disable;
+			input-disable;
+		};
+	};
+
+	mmc1_pins_default: mmc1default {
+		pins_cmd_dat {
+			pinmux = <MT8512_PIN_72_MSDC1_DAT0__FUNC_MSDC1_DAT0>,
+			       <MT8512_PIN_73_MSDC1_DAT1__FUNC_MSDC1_DAT1>,
+			       <MT8512_PIN_74_MSDC1_DAT2__FUNC_MSDC1_DAT2>,
+			       <MT8512_PIN_75_MSDC1_DAT3__FUNC_MSDC1_DAT3>,
+			       <MT8512_PIN_70_MSDC1_CMD__FUNC_MSDC1_CMD>;
+			input-enable;
+			drive-strength = <MTK_DRIVE_6mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+		};
+
+		pins_clk {
+			pinmux = <MT8512_PIN_71_MSDC1_CLK__FUNC_MSDC1_CLK>;
+			drive-strength = <MTK_DRIVE_6mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
+		};
+	};
+
+	mmc1_pins_uhs: mmc1@0 {
+		pins_cmd_dat {
+			pinmux = <MT8512_PIN_72_MSDC1_DAT0__FUNC_MSDC1_DAT0>,
+			       <MT8512_PIN_73_MSDC1_DAT1__FUNC_MSDC1_DAT1>,
+			       <MT8512_PIN_74_MSDC1_DAT2__FUNC_MSDC1_DAT2>,
+			       <MT8512_PIN_75_MSDC1_DAT3__FUNC_MSDC1_DAT3>,
+			       <MT8512_PIN_70_MSDC1_CMD__FUNC_MSDC1_CMD>;
+			input-enable;
+			drive-strength = <MTK_DRIVE_6mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+		};
+
+		pins_clk {
+			pinmux = <MT8512_PIN_71_MSDC1_CLK__FUNC_MSDC1_CLK>;
+			drive-strength = <MTK_DRIVE_6mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
+		};
+	};
+
+	mmc1_pins_dat1: mmc1_dat1 {
+		pins_dat1 {
+			pinmux = <MT8512_PIN_73_MSDC1_DAT1__FUNC_MSDC1_DAT1>;
+			input-enable;
+			drive-strength = <MTK_DRIVE_6mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_10>;
+		};
+	};
+
+	mmc1_dat1_eint: dat1_eint {
+		pins_dat1_eint {
+			pinmux = <MT8512_PIN_73_MSDC1_DAT1__FUNC_GPIO73>;
+			input-enable;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_10>;
+		};
+	};
+
+	uart1_pin: uart1default {
+		pins_rx {
+			pinmux = <MT8512_PIN_54_URXD1__FUNC_URXD1>;
+			input-enable;
+			bias-pull-up;
+		};
+
+		pins_tx {
+			pinmux = <MT8512_PIN_55_UTXD1__FUNC_UTXD1>;
+		};
+
+		pins_rts {
+			pinmux = <MT8512_PIN_56_URTS1__FUNC_DSP_URXD>;
+			input-enable;
+			bias-pull-up;
+		};
+
+		pins_cts {
+			pinmux = <MT8512_PIN_57_UCTS1__FUNC_DSP_UTXD>;
+		};
+	};
+
+	spis_pins: spis@0 {
+		pins_spis {
+		    pinmux = <MT8512_PIN_48_JTMS__FUNC_SPIS_CSB>,
+		    	<MT8512_PIN_49_JTCK__FUNC_SPIS_CLK>,
+		    	<MT8512_PIN_50_JTDI__FUNC_SPIS_SO>,
+		    	<MT8512_PIN_51_JTDO__FUNC_SPIS_SI>;
+		    drive-strength = <4>;
+		    bias-disable;
+		    input-enable;
+		};
+	};
+};
+
+&svs {
+	vproc-supply = <&mt6395_vproc>;
+};
+
+&ssusb {
+	vbus-supply = <&usb_p0_vbus>;
+	extcon = <&extcon_usb>;
+	dr_mode = "peripheral";
+	pinctrl-names = "default", "id_float", "id_ground";
+	pinctrl-0 = <&usb_id_pins_float>;
+	pinctrl-1 = <&usb_id_pins_float>;
+	pinctrl-2 = <&usb_id_pins_ground>;
+	phys = <&u2port0 PHY_TYPE_USB2>;
+	mediatek,force_vbus = "true";
+	status="okay";
+};
+
+&u3phy0 {
+	status = "okay";
+};
+
+&mmc0 {
+	status = "okay";
+	pinctrl-names = "default", "state_uhs", "sleep";
+	pinctrl-0 = <&mmc0_pins_default>;
+	pinctrl-1 = <&mmc0_pins_uhs>;
+	pinctrl-2 = <&mmc0_pins_sleep>;
+	bus-width = <8>;
+	max-frequency = <200000000>;
+	cap-mmc-highspeed;
+	mmc-hs200-1_8v;
+	cap-cqe;
+	cap-cqe_dcmd;
+	vmmc-supply = <&mmc_fixed_3v3>;
+	vqmmc-supply = <&mmc_fixed_1v8_io>;
+	assigned-clocks = <&topckgen CLK_TOP_MSDC50_0_SEL>;
+	assigned-clock-parents = <&topckgen CLK_TOP_MSDCPLL_D2>;
+	non-removable;
+	no-sd;
+	no-sdio;
+};
+
+&acenna_reserved {
+	size = <0 0x08000000>;
+};
+
+/ {
+	therm0: thermistor_0 {
+		compatible = "murata,ncp03wf104";
+		#thermal-sensor-cells = <0>;
+		pullup-uv = <1800000>;
+		pullup-ohm = <100000>;
+		pulldown-ohm = <0>;
+		io-channels = <&auxadc 0>;
+	};
+
+	case_virtual_sensor: case-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	skin_virtual_sensor: skin-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			mtktscpu = <0 0 0 0 0 0>;
+		};
+	};
+
+	cpu_virtual_sensor: cpu-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			mtktscpu = <0 0 1000 1000 0 0>;
+		};
+	};
+
+	cpufilter_virtual_sensor: cpufilter-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+		moving-average-prop = <1000 5 100 0>;
+
+		zone-list {
+			zone-names = "therm0_s", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			mtktscpu = <0 0 1000 1000 0 0>;
+		};
+	};
+
+};
+
+#include "mopac_thermal_zones.dtsi"
+#include "mt6395.dtsi"

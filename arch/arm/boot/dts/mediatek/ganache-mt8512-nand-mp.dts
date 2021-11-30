@@ -1,0 +1,431 @@
+/*
+ * Copyright (c) 2021 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+
+/dts-v1/;
+#include "brownie-mt8512.dtsi"
+
+/ {
+	model = "Amazon Ganache MP";
+	compatible = "amzn,ganache-mt8512-nand-mp", "mediatek,mt8512";
+	chosen {
+		bootargs = "";
+	};
+
+	reset_adc: fixedregulator@7 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&adc_reset_default>;
+	};
+
+	sound: sound {
+		mediatek,etdm1-in-master-clock=<1>;
+	};
+
+	/* display */
+	case_virtual_sensor: case-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <1 71700 32 (-432) (-40000) 125000>;
+			therm1_s = <1 65900 841 (-189) (-40000) 125000>;
+			therm2_s = <1 15700 942 1450 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <1 57100 882 117 0 0>;
+		};
+	};
+
+	/* top */
+	skin_virtual_sensor: skin-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <1 60100 100 (-54) (-40000) 125000>;
+			therm1_s = <1 9230 900 699 (-40000) 125000>;
+			therm2_s = <1 25700 900 465 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <1 71500 120 (-111) 0 0>;
+		};
+	};
+
+	back_virtual_sensor: back-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <1 22200 900 824 (-40000) 125000>;
+			therm1_s = <1 79700 153 (-411) (-40000) 125000>;
+			therm2_s = <1 29600 900 591 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <1 65400 680 (-39) 0 0>;
+		};
+	};
+
+	cpu_virtual_sensor: cpu-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 1000 1000 0 0>;
+		};
+	};
+
+	cpufilter_virtual_sensor: cpufilter-virtual-sensor {
+		compatible = "amazon,virtual_sensor";
+		#thermal-sensor-cells = <0>;
+		moving-average-prop = <1000 5 100 0>;
+
+		zone-list {
+			zone-names = "therm0_s", "therm1_s", "therm2_s", "wifi_temp", "mtktscpu";
+			therm0_s = <0 0 0 0 (-40000) 125000>;
+			therm1_s = <0 0 0 0 (-40000) 125000>;
+			therm2_s = <0 0 0 0 (-40000) 125000>;
+			wifi_temp = <0 0 0 0 0 0>;
+			mtktscpu = <0 0 1000 1000 0 0>;
+		};
+	};
+
+};
+
+&nandc {
+	status = "okay";
+};
+
+&auxadc {
+        expected-divider-voltage-raw = <900>;
+        ref-voltage-adc-channel = <3>;
+        has-error-correction;
+        status = "okay";
+};
+
+/* LED driver is enabled at runtime in u-boot based on board-id */
+&lp5036_i2c0_31 {
+	status = "disabled";
+};
+
+/* Audio AMP is enabled at runtime in u-boot based on board-id */
+&tas5805m_1_dac {
+	status = "disabled";
+};
+
+/* Audio ADC is enabled at runtime in u-boot based on board-id */
+&tlv320adc5140_1 {
+	status = "disabled";
+};
+
+&afe {
+	mediatek,etdm1-in-force-master-clock = <1>;
+};
+
+&i2c0 {
+
+	/* LED driver is enabled at runtime in u-boot based on board-id */
+	alr_is31fl3246_i2c0_31: is31fl3246@31 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "issi,is31fl3246";
+		reg = <0x31>;
+		vled-supply = <&led_power>;
+		status = "disabled";
+		led@0 {
+			reg = <0>;
+			label = "ledmod_0";
+			issi,led-module = <3>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@1 {
+			reg = <1>;
+			label = "ledmod_1";
+			issi,led-module = <4>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@2 {
+			reg = <2>;
+			label = "ledmod_2";
+			issi,led-module = <5>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@3 {
+			reg = <3>;
+			label = "ledmod_3";
+			issi,led-module = <6>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@4 {
+			reg = <4>;
+			label = "ledmod_4";
+			issi,led-module = <7>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@5 {
+			reg = <5>;
+			label = "ledmod_5";
+			issi,led-module = <8>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@6 {
+			reg = <6>;
+			label = "ledmod_6";
+			issi,led-module = <9>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@7 {
+			reg = <7>;
+			label = "ledmod_7";
+			issi,led-module = <10>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@8 {
+			reg = <8>;
+			label = "ledmod_8";
+			issi,led-module = <11>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@9 {
+			reg = <9>;
+			label = "ledmod_9";
+			issi,led-module = <0>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@10 {
+			reg = <10>;
+			label = "ledmod_10";
+			issi,led-module = <1>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@11 {
+			reg = <11>;
+			label = "ledmod_11";
+			issi,led-module = <2>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+	};
+
+	/* LED driver is enabled at runtime in u-boot based on board-id */
+	alr_aw21036_i2c0_36: aw21036@36 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "aw,aw21036";
+		reg = <0x36>;
+		vled-supply = <&led_power>;
+		status = "disabled";
+		led@0 {
+			reg = <0>;
+			label = "ledmod_0";
+			aw,led-module = <3>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@1 {
+			reg = <1>;
+			label = "ledmod_1";
+			aw,led-module = <4>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@2 {
+			reg = <2>;
+			label = "ledmod_2";
+			aw,led-module = <5>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@3 {
+			reg = <3>;
+			label = "ledmod_3";
+			aw,led-module = <6>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@4 {
+			reg = <4>;
+			label = "ledmod_4";
+			aw,led-module = <7>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@5 {
+			reg = <5>;
+			label = "ledmod_5";
+			aw,led-module = <8>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@6 {
+			reg = <6>;
+			label = "ledmod_6";
+			aw,led-module = <9>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@7 {
+			reg = <7>;
+			label = "ledmod_7";
+			aw,led-module = <10>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@8 {
+			reg = <8>;
+			label = "ledmod_8";
+			aw,led-module = <11>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@9 {
+			reg = <9>;
+			label = "ledmod_9";
+			aw,led-module = <0>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@10 {
+			reg = <10>;
+			label = "ledmod_10";
+			aw,led-module = <1>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+		led@11 {
+			reg = <11>;
+			label = "ledmod_11";
+			aw,led-module = <2>;
+			rgb-map = /bits/ 8 <1 0 2>;
+			linux,default-trigger = "boot-anim";
+		};
+	};
+
+	/* LED driver is enabled at runtime in u-boot based on board-id */
+	disp_is31fl3246_i2c0_30: is31fl3246@30 {
+		compatible = "issi,is31fl3246";
+		reg = <0x30>;
+		enable-gpio = <&pio 2 GPIO_ACTIVE_HIGH>;
+		status = "disabled";
+		frame@0 {
+			label = "frame_0";
+			frame-channel-map = /bits/ 8 <3 9 2 5 11 10 8 6 7 1
+			14 16 15 12 4 13 18 17 34 31
+			23 20 19 21 22 33 29 27 25 24
+			30 28 32 26 0 35>;
+		};
+	};
+
+	/* LED driver is enabled at runtime in u-boot based on board-id */
+	disp_aw21036_i2c0_34: aw21036@34 {
+		compatible = "aw,aw21036";
+		reg = <0x34>;
+		enable-gpio = <&pio 2 GPIO_ACTIVE_HIGH>;
+		status = "disabled";
+		frame@0 {
+			label = "frame_0";
+			frame-channel-map = /bits/ 8 <3 9 2 5 11 10 8 6 7 1
+			14 16 15 12 4 13 18 17 34 31
+			23 20 19 21 22 33 29 27 25 24
+			30 28 32 26 0 35>;
+		};
+	};
+
+	/* Audio AMP is enabled at runtime in u-boot based on board-id */
+	max98396_1_dac: max98396@3d {
+		compatible = "maxim,max98396";
+		reg = <0x3d>;
+		maxim,reset-gpio = <&pio 19 GPIO_ACTIVE_HIGH>;
+		dac-num = <0>;
+		NOVBAT = <0>;
+		phandle = <0x4D>; // Force phandle to be created for u-boot to link sound card.
+		status = "disabled";
+	};
+};
+
+&i2c_dsp {
+	/* Audio ADC is enabled at runtime in u-boot based on board-id */
+	ak5704_1_adc: ak5704@10 {
+		compatible = "akm,ak5704";
+		reg = <0x10>;
+		reset-adc-regulator-supply = <&reset_adc>;
+		adc-num = <0>;
+		disable-suspend;
+		phandle = <0x41>; // Force phandle to be created for u-boot to link sound card.
+		status = "disabled";
+	};
+	es7210_1_adc: es7210@40 {
+		compatible = "es,es7210";
+		reg = <0x40>;
+		reset-adc-regulator-supply = <&reset_adc>;
+		adc-num = <0>;
+		disable-suspend;
+		phandle = <0x42>; // Force phandle to be created for u-boot to link sound card.
+		status = "disabled";
+	};
+};
+
+&pio {
+	mmc1_pins_default: mmc1default {
+		pins_wifi_reset {
+			pinmux = <MT8512_PIN_44_PWM0__FUNC_GPIO44>;
+			input-enable;
+			bias-disable;
+		};
+	};
+
+	adc_reset_default: adcreset {
+		pins_cmd_dat {
+			pinmux = <MT8512_PIN_17_GPIO17__FUNC_GPIO17>;
+			output-high;
+			bias-pull-up;
+		};
+	};
+
+	aud_pins_default: audiodefault {
+		pins_mclk {
+			pinmux = <MT8512_PIN_92_I2SIN_MCLK__FUNC_GPIO92>;
+			output-low;
+		};
+	};
+};
+
+&pwm {
+	invert = <1>;
+};
+
+&volumeup_button {
+	swdebounce-interval = <100>;
+	dyndebounce-interval = <0>;
+	dyndebounce-duration = <10000>;		/* 10 sec */
+};
+
+&volumedown_button {
+	swdebounce-interval = <100>;
+	dyndebounce-interval = <0>;
+	dyndebounce-duration = <10000>;		/* 10 sec */
+};
+
+&action_button {
+	swdebounce-interval = <100>;
+	dyndebounce-interval = <0>;
+	dyndebounce-duration = <10000>;		/* 10 sec */
+};

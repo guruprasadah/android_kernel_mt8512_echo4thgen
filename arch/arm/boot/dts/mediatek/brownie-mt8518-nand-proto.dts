@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2019 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "brownie-mt8518.dtsi"
+
+/ {
+	model = "Amazon Brownie";
+	compatible = "amzn,brownie-mt8518-nand-proto", "mediatek,mt8518";
+
+	chosen {
+		bootargs = "console=ttyS0,921600n1 \
+androidboot.slot_suffix=_a rootwait ro init=/init ubi.mtd=persist,4096,4,0 ubi.mtd=userdata,4096,20,1 skip_initramfs ubi.block=1,0 root=/dev/ubiblock1_0 \
+earlycon=uart8250,mmio32,\
+0x11005000 initcall_debug loglevel=8 \
+androidboot.hardware=mt8518  androidboot.selinux=permissive \
+firmware_class.path=/vendor/firmware";
+	};
+};
+
+&bch {
+	status = "okay";
+};
+
+&mmc0 {
+	status = "disabled";
+};
+
+&nandc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&nand_pins_default>;
+	status = "okay";
+	nand@0 {
+		reg = <0>;
+		nand-on-flash-bbt;
+		nand-ecc-mode = "hw";
+	};
+};
+
+&i2c0 {
+	tas5805m_1_dac: tas5805m@2c {
+		compatible = "ti,tas5805m";
+		reg = <0x2c>;
+		reset-gpio = <8>;
+		dac-num = <0>;
+		speaker-config = <1>;
+		status = "okay";
+	};
+};

@@ -1,0 +1,17 @@
+# Spi Slave driver configuration
+menuconfig MTK_SPI_SLAVE
+	bool "MediaTek SPI SLAVE support"
+	default n
+	---help---
+	  This selects the MediaTek(R) Spi Slave device driver.
+	  If you want to use MediaTek(R) Spi Slave device driver,
+	  say Y or M here.If unsure, say N.
+
+config MTK_SPI_SLAVE_MT85XX
+	tristate "MediaTek SPI SLAVE controller"
+	depends on MTK_SPI_SLAVE
+	default n
+	---help---
+	  This selects the Spi Slave device driver for Mediatek MT85XX series ARM SoCs.
+	  If you want to use MediaTek(R) Spi Slave interface, say Y or M here.
+	  If you are not sure, say N.

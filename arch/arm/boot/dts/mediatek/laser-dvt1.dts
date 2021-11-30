@@ -1,0 +1,137 @@
+/*
+ * Copyright (c) 2020 Amazon.com
+ *
+ * SPDX-License-Identifier: (GPL-2.0)
+ */
+
+/dts-v1/;
+#include "laser-mt8512.dtsi"
+
+/ {
+	model = "Amazon Laser DVT1.1";
+	compatible = "amzn,laser-dvt1", "mediatek,mt8512";
+
+	chosen {
+		bootargs = "";
+	};
+};
+
+&sound {
+	no-spkr-power;
+};
+
+&auxadc {
+	expected-divider-voltage-raw = <900>;
+	ref-voltage-adc-channel = <1>;
+	status = "okay";
+};
+
+&tsl25723_i2c2_39 {
+	interrupt-parent = <&pio>;
+	interrupts = <111 (IRQ_TYPE_LEVEL_LOW)>;
+};
+
+&tmp_112_i2c2_4a {
+	status = "disabled";
+};
+
+&tmp_112_i2c2_4b {
+	status = "okay";
+};
+
+&led_power {
+    startup-delay-us = <25000>;
+};
+
+&i2c0 {
+	tas5805m_2_dac: tas5805m@2d {
+		swap-channels;
+		ana-gain = <10>;
+	};
+};
+
+&case_virtual_sensor {
+	zone-list {
+		therm0_s = <0 0 0 0 (-40000) 125000>;
+		therm1_s = <0 0 0 0 (-40000) 125000>;
+		therm2_s = <1 54996 395 78 (-40000) 125000>;
+		therm3_s = <1 8635 269 1016 (-40000) 125000>;
+		wifi_temp = <0 0 0 0 0 0>;
+		mtktscpu = <1 74660 950 (-184) 0 0>;
+		tmp_112_i2c0_4a_s = <0 0 0 0 0 0>;
+	};
+};
+
+&skin_virtual_sensor {
+	zone-list {
+		therm0_s = <0 12391 950 624 (-40000) 125000>;
+		therm1_s = <0 0 0 0 (-40000) 125000>;
+		therm2_s = <0 0 0 0 (-40000) 125000>;
+		therm3_s = <0 0 0 0 (-40000) 125000>;
+		wifi_temp = <0 0 0 0 0 0>;
+		mtktscpu = <1 19916 307 98 0 0>;
+		tmp_112_i2c0_4a_s = <0 0 0 0 0 0>;
+	};
+};
+
+&back_virtual_sensor {
+	zone-list {
+		therm0_s = <0 0 0 0 (-40000) 125000>;
+		therm1_s = <0 0 0 0 (-40000) 125000>;
+		therm2_s = <0 0 0 0 (-40000) 125000>;
+		therm3_s = <0 4619 950 838 (-40000) 125000>;
+		wifi_temp = <0 0 0 0 0 0>;
+		mtktscpu = <1 62952 836 10 0 0>;
+		tmp_112_i2c0_4a_s = <0 0 0 0 0 0>;
+	};
+};
+
+&cpu_virtual_sensor {
+	zone-list {
+		therm0_s = <0 0 0 0 (-40000) 125000>;
+		therm1_s = <0 0 0 0 (-40000) 125000>;
+		therm2_s = <0 0 0 0 (-40000) 125000>;
+		therm3_s = <0 0 0 0 (-40000) 125000>;
+		wifi_temp = <0 0 0 0 0 0>;
+		mtktscpu = <0 0 1000 1000 0 0>;
+		tmp_112_i2c0_4a_s = <0 0 0 0 0 0>;
+	};
+};
+
+&cpufilter_virtual_sensor {
+	zone-list {
+		therm0_s = <0 0 0 0 (-40000) 125000>;
+		therm1_s = <0 0 0 0 (-40000) 125000>;
+		therm2_s = <0 0 0 0 (-40000) 125000>;
+		therm3_s = <0 0 0 0 (-40000) 125000>;
+		wifi_temp = <0 0 0 0 0 0>;
+		mtktscpu = <0 0 1000 1000 0 0>;
+		tmp_112_i2c0_4a_s = <0 0 0 0 0 0>;
+	};
+};
+
+&case1_virtual_sensor {
+	zone-list {
+		zone-names = "therm0_s", "therm1_s", "therm2_s", "therm3_s", "wifi_temp", "mtktscpu", "tmp_112_i2c0_4a_s";
+		therm0_s = <0 0 0 0 (-40000) 125000>;
+		therm1_s = <0 0 0 0 (-40000) 125000>;
+		therm2_s = <1 59067 453 (-40) (-40000) 125000>;
+		therm3_s = <0 4646 242 847 (-40000) 125000>;
+		wifi_temp = <0 0 0 0 0 0>;
+		mtktscpu = <0 0 0 0 0 0>;
+		tmp_112_i2c0_4a_s = <0 0 0 0 0 0>;
+	};
+};
+
+&back1_virtual_sensor {
+	zone-list {
+		zone-names = "therm0_s", "therm1_s", "therm2_s", "therm3_s", "wifi_temp", "mtktscpu", "tmp_112_i2c0_4a_s";
+		therm0_s = <0 0 0 0 (-40000) 125000>;
+		therm1_s = <0 0 0 0 (-40000) 125000>;
+		therm2_s = <0 0 0 0 (-40000) 125000>;
+		therm3_s = <0 3659 950 850 (-40000) 125000>;
+		wifi_temp = <0 0 0 0 0 0>;
+		mtktscpu = <0 0 0 0 0 0>;
+		tmp_112_i2c0_4a_s = <0 0 0 0 0 0>;
+	};
+};
